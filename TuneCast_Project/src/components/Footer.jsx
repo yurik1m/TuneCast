@@ -1,21 +1,23 @@
 import styled from "styled-components"
-import Link from "next/link"
+import {Link} from "react-router-dom"
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
     return(
         <StyledFooter>
-            <Link href="/" passhref >
-                <a>{currentYear} &copy;TuneCast
-                    <Tooltip/>
-                </a>
-            </Link>
+            {/* <Link to="/"> */}
+                <StyledA>
+                    <Tooltip>{currentYear} &copy;TuneCast</Tooltip>
+                </StyledA>
+            {/* </Link> */}
         </StyledFooter>
     );
 }
 
 const StyledFooter = styled.footer`
     background-color: rgba(255, 255, 255, 0.51);
+    display: flex;
+    justify-content: left;
     align-items: center;
     padding-left: 50px;
     width: 100%;
