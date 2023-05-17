@@ -13,16 +13,18 @@ export default function Footer() {
         </StyledFooter>
     );
 }
-
+//  
 const StyledFooter = styled.footer`
-    background-color: rgba(255, 255, 255, 0.51);
+    position: relative;
+    background-color:rgba(255, 255, 255, 0.51);
     display: flex;
     justify-content: left;
     align-items: center;
     padding-left: 50px;
-    width: 100%;
+    width: 100vw;
     height: 100px;
     bottom: 0;
+    left: 0;
 `;
 
 const StyledA = styled.a`

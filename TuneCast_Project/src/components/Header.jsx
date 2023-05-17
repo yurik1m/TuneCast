@@ -38,7 +38,7 @@ const HeaderContainer = styled.header`
   z-index: 10;
   align-items: center;
   justify-content: space-between;
-  background-color: gray;
+  background-color: rgba(255, 255, 255, 0.51);
   height: 120px;
   padding: 0 20px;
 `;
