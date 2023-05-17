@@ -33,7 +33,6 @@ export default function Weather() {
           <SiteList 
             key={idx}
             onClick={() => handleSelect(site)}
-            className={selectedItem === site ? "selected" : ""}
           >
             {site}
           </SiteList>

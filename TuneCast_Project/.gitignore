@@ -24,4 +24,6 @@ dist-ssr
 *.sw?
 
 .yarn
-.next
+# api에 접근하기 위한 key 저장
+.env  
+
