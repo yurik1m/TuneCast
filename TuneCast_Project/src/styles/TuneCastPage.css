@@ -1,0 +1,15 @@
+
+p {
+  margin: 0;
+  text-align: left;
+}
+
+hr {
+  width: 1px;
+  height: 60%;
+  border: none;
+  background-color: white;
+
+  margin: 0;
+  padding: 0;
+}
