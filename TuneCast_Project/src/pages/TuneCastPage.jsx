@@ -4,7 +4,7 @@ import '../styles/TuneCastPage.css';
 import jimin from '../assets/images/jimin_mimoji.png';
 import circleBackground from '../assets/images/circle_background.png';
 import chart_icon from '../assets/images/chart_icon.png';
-import spotify_icon from '../assets/images/spotify_icon.png';
+import spotify_icon from '../assets/images/spotify.png';
 import weather_icon from '../assets/images/weather_icon.png';
 import notion from '../assets/images/notion.png';
 import github from '../assets/images/github.png';
