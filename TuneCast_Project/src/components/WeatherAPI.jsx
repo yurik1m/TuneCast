@@ -8,6 +8,7 @@ import { fetchForecast, fetchCurrentWeather, convertUnixToKST, convertCityName }
 // 최저온도: forecast[index].temp_min
 // 날씨: forecast[index].weather
 
+// 현재 날씨의 경우 아래와 같이 불러서 사용
 // 위치(도시): currentWeather.cityName
 // 시간: currentWeather.dt -> ex) 5월 23일 화요일 12:00
 // currentWeather.current_temp
@@ -25,6 +26,7 @@ function WeatherAPI() {
   useEffect(() => {
     if (isLoading) {
       fetchForecast(city).then((data) => {
+        //TODO: 추후 현재날짜와 시간을 고려하여 필요한 데이터만 추출하도록 변경필요 (시작 데이터가 현재시간이 아님)
         const filteredData = data.list.filter((item, index) => index % 8 === 0);
         const forecastData = filteredData.map((item) => ({
           temp_max: item.main.temp_max,
