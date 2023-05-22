@@ -1,42 +1,58 @@
 import { useEffect, useState } from "react";
+import { fetchForecast, fetchCurrentWeather, convertUnixToKST, convertCityName } from "../utils/WeatherAPIFunctions.js";
 
 //city: Seoul, Busan, Daegu, Incheon, Gwangju, Daejeon, Ulsan, Sejong
 
-let API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
+// 5일 예보의 경우 아래와 같이 불러서 사용
+// 최고온도: forecast[index].temp_max
+// 최저온도: forecast[index].temp_min
+// 날씨: forecast[index].weather
+
+// 위치(도시): currentWeather.cityName
+// 시간: currentWeather.dt -> ex) 5월 23일 화요일 12:00
+// currentWeather.current_temp
+// currentWeather.temp_max
+// currentWeather.temp_min
+// currentWeather.feels_like
+// currentWeather.weather
 
 function WeatherAPI() {
   const [forecast, setForecast] = useState([]);
   const [currentWeather, setCurrentWeather] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [city, setCity] = useState("Seoul");
-
-  let API_URL_Forecast = `http://api.openweathermap.org/data/2.5/forecast?q=${city},kr&appid=${API_KEY}&units=metric`;
-  let API_URL_CurrentWeather = `https://api.openweathermap.org/data/2.5/weather?q=${city},kr&appid=${API_KEY}&units=metric`
 
   useEffect(() => {
     if (isLoading) {
-      fetch(API_URL_Forecast).then(
-        function (res) {
-          return res.json().then(function (res3) {
-            console.log(res3.list);
-            setForecast(res3.list);
-            setIsLoading(false);
-          });
-        }
-      )
+      fetchForecast(city).then((data) => {
+        const filteredData = data.list.filter((item, index) => index % 8 === 0);
+        const forecastData = filteredData.map((item) => ({
+          temp_max: item.main.temp_max,
+          temp_min: item.main.temp_min,
+          weather: item.weather[0].main
+        }));
+        console.log(forecastData);
+        setForecast(forecastData);
+        setIsLoading(false);
+      });
     }
   }, [isLoading]);
 
   useEffect(() => {
     if (isLoading) {
-      fetch(API_URL_CurrentWeather).then(
-        function (res) {
-          return res.json().then(function (res2) {
-            console.log(res2);
-            setCurrentWeather(res2);
-          });
-        }
-      )
+      fetchCurrentWeather(city).then((data) => {
+        const currentData = {
+          cityName: convertCityName(city),
+          dt: convertUnixToKST(data.dt),
+          current_temp: data.main.temp,
+          temp_max: data.main.temp_max,
+          temp_min: data.main.temp_min,
+          feels_like: data.main.feels_like,
+          weather: data.weather[0].main
+        };
+        console.log(currentData);
+        setCurrentWeather(currentData);
+      });
     }
   }, [isLoading]);
 
