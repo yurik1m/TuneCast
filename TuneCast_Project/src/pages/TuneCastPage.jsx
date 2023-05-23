@@ -65,8 +65,8 @@ function MemberPage() {
       <BlockBackground>
         <MemberContainer >
           {members.map((member, index) => (
-            <>
-              <MemberBlock key={index}>
+            <div key={index}>
+              <MemberBlock>
                 <Profile>
                   {member.image && (
                     <img src={member.image} alt={member.name} width="80%" height="80%" />
@@ -81,7 +81,7 @@ function MemberPage() {
               </MemberBlock>
 
               {index !== members.length - 1 && <hr />}
-            </>
+            </div>
           ))}
         </MemberContainer>
       </BlockBackground>
