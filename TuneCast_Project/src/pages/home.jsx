@@ -2,13 +2,14 @@ import styled from "styled-components";
 import { useEffect, useState,Fragment } from "react";
 import {Header, Footer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
-import {searchPlaylistsByTag} from "../api/playlist"
+import {searchPlaylistsByTag} from "../utils/spotifyAPI"
 import cloud from "../assets/images/cloud.png"
 import rain from "../assets/images/rain.png"
 import wsnow from "../assets/images/snow.png"
 import sun from "../assets/images/sun.png"
 import fog from "../assets/images/fog.png"
 import playicon from "../assets/images/play_icon.png"
+import back from "../assets/images/back_icon.png"
 
 
 function PlaylistContainer ({playlist}) {
@@ -16,11 +17,11 @@ function PlaylistContainer ({playlist}) {
     <PlayContainer>
       <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
       <PlayDetail>
-        <h3>{playlist.title}</h3>
+        <PlayTitle>{playlist.name}</PlayTitle>
         <p>spotify</p>
-        <button>
-          <img src={playicon} alt="play"/>
-        </button>
+        <PlayButton>
+          <ButtonImg src={playicon} alt="play"/>
+        </PlayButton>
       </PlayDetail>
    </PlayContainer>
 )
@@ -108,14 +109,17 @@ export default function Home() {
     )}
     <Main>
         {/* <AudioPlayer src={alarm} /> */}
-        <MainSection>
+        <PMainSection>
+          <Back>
+            <ButtonImg src={back} alt="뒤로가기"/>
+          </Back>
          { isPlaylist.map((playlist) => (
             <PlaylistContainer 
               key={playlist.id}
               playlist={playlist}
             />
           ))}
-        </MainSection>
+        </PMainSection>
     </Main>
     
     <Footer />
@@ -167,30 +171,36 @@ const SiteList = styled.li`
 `
 const Main = styled.main`
   width: 1200px;
-  height: 1200px;
-  margin: center;
+  margin: 120px auto;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-`
-
-const MainSection = styled.div`
-  width: 100%;
-  height: 640px;
-  border-radius: 10%;
-  background-color: rgba(255, 255, 255, 0.3);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
 `
+
+const PMainSection = styled.div`
+  position: relative;
+  margin: 35px 120px;
+  width: 1200px;
+  height: 640px;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 50px;
+  justify-content: space-between; 
+  align-items: center;
+  border-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.3);
+
+`
 const PlayContainer = styled.div`
-  width: 520px;
+  width: 500px;
   height: 250px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 20px;
+  padding: 20px;
+  border-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.3);
 `
 const PlayCover = styled.img`
   width: 205px;
@@ -204,4 +214,33 @@ const PlayDetail = styled.div`
   flex-direction: column;
   justify-content: space-between;
   padding: 5px;
+  align-items: start;
+  margin-left: 20px;
+`
+const PlayTitle = styled.h3`
+  font-size: 25px;
+  font-weight: 700;
+`
+
+
+const PlayButton = styled.button`
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0);
+  padding: 0;
+  border-radius: 50%;
+`
+
+const ButtonImg = styled.img`
+  width: 40px;
+`
+const Back = styled.button`
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0);
+  padding: 0;
+  border-radius: 50%;
 `
