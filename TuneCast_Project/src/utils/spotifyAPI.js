@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { Buffer } from 'buffer';
 
-const {REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET, REDIRECT_URI} = import.meta.env;
 
 window.Buffer = window.Buffer || Buffer;
 
-const client_id = 'dc26375fb6e94044bdf0ed050125534c';
-const client_secret = '194595669ae54b4b867dd73711d42e07';
+const client_id = import.meta.env.VITE_CLIENT_ID;
+const client_secret = import.meta.env.VITE_CLIENT_SECRET;
 const auth = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
 
 //스포티파이 API를 사용하기 위한 토큰을 받아오는 함수
@@ -94,8 +93,7 @@ export async function searchPlaylistsByTag(tag, limit = 4) {
 //플레이리스트의 트랙들을 검색하는 함수 
 //결과가 반환되는 배열의 형태는 다음과 같다.
 // [
-//   { name: '곡1', cover: 'url1', album: '앨범1', artist: '아티스트1' },
-//   { name: '곡2', cover: 'url2', album: '앨범2', artist: '아티스트2' },
+ //   { name: '곡2', cover: 'url2', album: '앨범2', artist: '아티스트2' },
 //   ...
 // ]
 export async function getPlaylistTracks(playlistName) {

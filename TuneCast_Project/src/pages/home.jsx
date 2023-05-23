@@ -39,7 +39,7 @@ export default function Home() {
                   {name: "부산",
                   lat: "35.179554",
                   lon: "129.075642",},
-                  {name: "대전",
+                  {name: "대전", 
                   lat: "36.350412",
                   lon: "127.384548",},
                   {name: "대구",
@@ -109,7 +109,7 @@ export default function Home() {
     )}
     <Main>
         {/* <AudioPlayer src={alarm} /> */}
-        <PMainSection>
+        <MainSection>
           <Back>
             <ButtonImg src={back} alt="뒤로가기"/>
           </Back>
@@ -119,7 +119,7 @@ export default function Home() {
               playlist={playlist}
             />
           ))}
-        </PMainSection>
+        </MainSection>
     </Main>
     
     <Footer />
@@ -177,7 +177,7 @@ const Main = styled.main`
   align-items: center;
 `
 
-const PMainSection = styled.div`
+const MainSection = styled.div`
   position: relative;
   margin: 35px 120px;
   width: 1200px;
