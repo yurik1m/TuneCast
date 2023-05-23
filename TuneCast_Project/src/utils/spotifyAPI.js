@@ -52,6 +52,7 @@ export async function searchPlaylistsByTag(tag, limit = 4) {
 
     playlists.forEach((playlist) => {
       const playlistInfo = {
+        id: playlist.id,
         name: playlist.name,
         cover: playlist.images.length > 0 ? playlist.images[0].url : null,
       };
