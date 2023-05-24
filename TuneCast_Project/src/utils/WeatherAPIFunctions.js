@@ -1,4 +1,4 @@
-const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
+const API_KEY = import.meta.env.VITE_WEATHER_KEY;
 
 export function fetchForecast(city) {
   let API_URL_Forecast = `http://api.openweathermap.org/data/2.5/forecast?q=${city},kr&appid=${API_KEY}&units=metric`;
