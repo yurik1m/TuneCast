@@ -1,0 +1,13 @@
+
+p {
+    text-align: left;
+  }
+  
+  hr {
+    width: 1px;
+    height: 60%;
+    border: none;
+    background-color: white;
+  
+    padding: 0;
+  }
