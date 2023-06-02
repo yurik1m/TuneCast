@@ -3,13 +3,10 @@ import { useEffect, useState,Fragment } from "react";
 import {Header, Footer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
 import {searchPlaylistsByTag} from "../utils/spotifyAPI"
-import cloud from "../assets/images/cloud.png"
-import rain from "../assets/images/rain.png"
-import wsnow from "../assets/images/snow.png"
-import sun from "../assets/images/sun.png"
-import fog from "../assets/images/fog.png"
 import playicon from "../assets/images/play_icon.png"
 import back from "../assets/images/back_icon.png"
+import { fetchCurrentWeatherData, fetchForecastData } from "../utils/weatherAPI";
+import {sites, weathers} from "../utils/data"
 
 
 function PlaylistContainer ({playlist}) {
@@ -27,47 +24,27 @@ function PlaylistContainer ({playlist}) {
 )
 };
 
+const CurrntWeather = ({currentWeatherInfo, sites}) => {
+  return (
+    <CurrentWeatherContainer>
 
+    </CurrentWeatherContainer>
+  )
+}
+
+//[{cityName: '도시이름', dt: '날짜', current_temp: '현재온도', temp_max: '최고온도', temp_min: '최저온도', feels_like: '체감온도', weather: '날씨'}, .. ]
+v
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("서울");
-  const [weatherInfo, setWeatherInfo] = useState([]);
+  const [selectedItem, setSelectedItem] = useState("Seoul");
+  const [currentWeatherInfo, setCurrentWeatherInfo] = useState([]);
+  const [forcastWeatherInfo, setForcastWeatherInfo] = useState([]);
   const [isPlaylist, setIsPlaylist] = useState([]);
-  const sites = [{name: "서울", //지역, 위도, 경도
-                  lat: "37.532600",
-                  lon: "127.024612",},
-                  {name: "부산",
-                  lat: "35.179554",
-                  lon: "129.075642",},
-                  {name: "대전", 
-                  lat: "36.350412",
-                  lon: "127.384548",},
-                  {name: "대구",
-                  lat: "35.871380",
-                  lon: "128.601743",},
-                  {name: "인천",
-                  lat: "37.456256",
-                  lon: "126.705206",},
-                  {name: "광주",
-                  lat: "35.160072",
-                  lon: "126.851440",},
-                  {name: "울산",
-                  lat: "35.538377",
-                  lon: "129.311360",},
-                  {name: "세종",
-                  lat: "36.480132",
-                  lon: "127.289021",},
-                ];
-  const weathers = [{name: "맑음",src: {sun}},    //날씨 + 아이콘 배열
-                    {name: "구름",src: {cloud}},
-                    {name: "비",src: {rain}},
-                    {name: "눈",src: {wsnow}},
-                    {name: "안개",src: {fog}}];
 
   const weatherTag = weathers[0].name; //날씨 태그
 
   useEffect(() => {  //날씨 태그에 따른 플레이리스트 검색
-    searchPlaylistsByTag(weatherTag, 4)
+    searchPlaylistsByTag(currentWeatherInfo.weather, 4)
       .then((playlists) => {
         setIsPlaylist(playlists);
       })
@@ -82,6 +59,24 @@ export default function Home() {
       }
     };
     useEffect(() => {},[]);
+
+    useEffect(() => {  //날씨 정보 가져오기
+      fetchCurrentWeatherData(selectedItem)
+      .then((data) => {
+        setCurrentWeatherInfo(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+      fetchForecastData(selectedItem)
+      .then((data) => {
+        setForcastWeatherInfo(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }, [selectedItem]);
+
   
   return (
     <Fragment>
@@ -244,3 +239,11 @@ const Back = styled.button`
   padding: 0;
   border-radius: 50%;
 `
+const CurrentWeatherContainer = styled.div`
+  width: 675px;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  border-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.3);
+  `
