@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createGlobalStyle } from "styled-components"
 import Route from '../components/Route'
+import Background from '../components/background'
 
 const GlobalStyle = createGlobalStyle`
   html, body, div, span, applet, object, iframe,
