@@ -99,7 +99,7 @@ const Title = styled.p `
   position: absolute;
   font-family: 'Inter';
   font-style: normal;
-  font-weight; bold;
+  font-weight: bold;
   font-size: 80px;
   line-height: 30px;
   float: left;
@@ -185,5 +185,5 @@ const NameInfo = styled.div`
   width: 164px;
   display: flex; 
   flex-direction: column;
-  justify-contents: flex-start;
+  justify-content: flex-start;
 `

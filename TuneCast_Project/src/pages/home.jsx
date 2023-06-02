@@ -5,7 +5,7 @@ import mapicon from "../assets/images/mapping_icon.png"
 import {searchPlaylistsByTag} from "../utils/spotifyAPI"
 import playicon from "../assets/images/play_icon.png"
 import back from "../assets/images/back_icon.png"
-import { fetchCurrentWeatherData, fetchForecastData } from "../utils/weatherAPI";
+import { fetchCurrentWeatherData, fetchForecastData } from "../utils/WeatherAPIFunctions";
 import {sites, weathers} from "../utils/data"
 
 
@@ -33,7 +33,7 @@ const CurrntWeather = ({currentWeatherInfo, sites}) => {
 }
 
 //[{cityName: '도시이름', dt: '날짜', current_temp: '현재온도', temp_max: '최고온도', temp_min: '최저온도', feels_like: '체감온도', weather: '날씨'}, .. ]
-v
+
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("Seoul");
@@ -184,7 +184,6 @@ const MainSection = styled.div`
   align-items: center;
   border-radius: 30px;
   background-color: rgba(255, 255, 255, 0.3);
-
 `
 const PlayContainer = styled.div`
   width: 500px;
