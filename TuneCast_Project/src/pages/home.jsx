@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import { useEffect, useState,Fragment } from "react";
-import {Header, Footer} from "../components"
+import { useEffect, useReducer,Fragment } from "react";
+import {Header, Footer, MainContainer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
 import {searchPlaylistsByTag} from "../utils/spotifyAPI"
 import playicon from "../assets/images/play_icon.png"
 import back from "../assets/images/back_icon.png"
-import { fetchCurrentWeatherData, fetchForecastData } from "../utils/WeatherAPIFunctions";
-import {sites, weathers} from "../utils/data"
+import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFunctions";
+import {sites, weathers} from "../utils/data";
 
 
 function PlaylistContainer ({playlist}) {
@@ -21,68 +21,110 @@ function PlaylistContainer ({playlist}) {
         </PlayButton>
       </PlayDetail>
    </PlayContainer>
-)
-};
+)};
 
-const CurrntWeather = ({currentWeatherInfo, sites}) => {
+
+const CurrntWeather = ({currentWeatherInfo, weathers}) => {
+  const WeatherIcon = () => {
+    const weather = weathers.find((weather) => weather.name === currentWeatherInfo.weather);
+    return <Icon src={weather.icon} alt={weather.name}/>
+  }
+
   return (
     <CurrentWeatherContainer>
-
+      <WeatherIcon />
+      <CurrentWeatherInfoContainer>
+        <City>{currentWeatherInfo.cityName}</City>
+        <Time>{currentWeatherInfo.dt}</Time>
+        <Humidity></Humidity>
+        <Temp>
+          <CurrentTemp>{currentWeatherInfo.current_temp}</CurrentTemp>
+          <MaxMinTemp>{currentWeatherInfo.temp_min}/{currentWeatherInfo.temp_max}</MaxMinTemp>
+        </Temp>
+        <FeelsLike>{currentWeatherInfo.feels_like}</FeelsLike>
+        <WindSpeed></WindSpeed>
+      </CurrentWeatherInfoContainer>
     </CurrentWeatherContainer>
   )
 }
 
 //[{cityName: '도시이름', dt: '날짜', current_temp: '현재온도', temp_max: '최고온도', temp_min: '최저온도', feels_like: '체감온도', weather: '날씨'}, .. ]
+const initialState = { //초기값
+  isMenuOpen: false,
+  selectedItem: "Seoul",
+  currentWeatherInfo: [],
+  forcastWeatherInfo: [],
+  playlist: [],
+  isPlaylist: false,
+}
+
+const reducer = (state, action) => { 
+  switch (action.type) {
+    case "TOGGLE_MENU":
+      return {...state, isMenuOpen: !state.isMenuOpen};
+    case "SELECT_ITEM":
+      return {...state, selectedItem: action.payload};
+    case "SET_CURRENT_WEATHER_INFO":
+      return {...state, currentWeatherInfo: action.payload};
+    case "SET_FORECAST_WEATHER_INFO":
+      return { ...state, forcastWeatherInfo: action.payload};
+    case "SET_PLAYLIST":
+      return {...state, playlist: action.payload,};
+    case "TOGGLE_PLAYLIST":
+      return {...state, isPlaylist: !state.isPlaylist};
+    default:
+      return state;
+  }
+};
+
 
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("Seoul");
-  const [currentWeatherInfo, setCurrentWeatherInfo] = useState([]);
-  const [forcastWeatherInfo, setForcastWeatherInfo] = useState([]);
-  const [isPlaylist, setIsPlaylist] = useState([]);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const weatherTag = weathers[0].name; //날씨 태그
+  const handleToggleMenu = () => {
+    dispatch({ type: "TOGGLE_MENU" });
+  };
+
+  const handleSelectItem = (item) => {
+    dispatch({ type: "SELECT_ITEM", payload: item });
+  };
+
+  useEffect(() => {  //날씨 정보 가져오기
+    fetchCurrentWeatherData(selectedItem)
+    .then((data) => {
+      dispatch({ type: "SET_CURRENT_WEATHER_INFO", payload: data});
+      sessionStorage.setItem('currentWeather', JSON.stringify(data.weather));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    fetchForecastData(selectedItem)
+    .then((data) => {
+      dispatch({ type: "SET_FORECAST_WEATHER_INFO", payload: data});
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  },[state.selectedItem]);
+
 
   useEffect(() => {  //날씨 태그에 따른 플레이리스트 검색
-    searchPlaylistsByTag(currentWeatherInfo.weather, 4)
+    searchPlaylistsByTag(state.currentWeatherInfo.weather, 4)
       .then((playlists) => {
-        setIsPlaylist(playlists);
+        dispatch({ type: "SET_PLAYLIST", payload: playlists });
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [isPlaylist]);
+  }, [state.isPlaylist]);
 
-  const handleSelect = (site) => {
-      if(selectedItem != site){
-        setSelectedItem(site);
-      }
-    };
-    useEffect(() => {},[]);
 
-    useEffect(() => {  //날씨 정보 가져오기
-      fetchCurrentWeatherData(selectedItem)
-      .then((data) => {
-        setCurrentWeatherInfo(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-      fetchForecastData(selectedItem)
-      .then((data) => {
-        setForcastWeatherInfo(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    }, [selectedItem]);
 
-  
   return (
     <Fragment>
-    <Header isMainPage={true} onMenuClick={() => setIsMenuOpen(!isMenuOpen)}/>
+    <Header isMainPage={true} onMenuClick={handleToggleMenu}/>
     {isMenuOpen && (
-      <MenuWrapper isOpen={isMenuOpen}>      
+      <MenuWrapper isOpen={state.isMenuOpen}>      
         <Menu>
         <div>
           <img src={mapicon} alt="지역선택"/>
@@ -92,7 +134,7 @@ export default function Home() {
         {sites.map((site, idx) => (
           <SiteList 
             key={idx}
-            onClick={() => handleSelect(site)}
+            onClick={() => handleSelectItem(site)}
           >
             {site.name}
           </SiteList>
@@ -104,17 +146,21 @@ export default function Home() {
     )}
     <Main>
         {/* <AudioPlayer src={alarm} /> */}
-        <MainSection>
-          <Back>
-            <ButtonImg src={back} alt="뒤로가기"/>
+        <MainContainer variant={state.isPlaylist ? "row" : "column"}>
+          <Back onClick={() => dispatch({type: "TOGGLE_PLAYLIST"})}>
+            <ButtonImg src={back} alt="플레이리스트/날씨 보기"/>
           </Back>
-         { isPlaylist.map((playlist) => (
-            <PlaylistContainer 
-              key={playlist.id}
-              playlist={playlist}
-            />
-          ))}
-        </MainSection>
+          {state.isPlaylist ? (
+            state.playlist.map((playlist) => (
+              <PlaylistContainer 
+                key={playlist.id}
+                playlist={playlist}
+              />
+            ))
+          ) : (
+            <div></div>
+          )}
+        </MainContainer>
     </Main>
     
     <Footer />
@@ -172,19 +218,6 @@ const Main = styled.main`
   align-items: center;
 `
 
-const MainSection = styled.div`
-  position: relative;
-  margin: 35px 120px;
-  width: 1200px;
-  height: 640px;
-  display: flex;
-  flex-wrap: wrap;
-  padding: 50px;
-  justify-content: space-between; 
-  align-items: center;
-  border-radius: 30px;
-  background-color: rgba(255, 255, 255, 0.3);
-`
 const PlayContainer = styled.div`
   width: 500px;
   height: 250px;
@@ -245,4 +278,18 @@ const CurrentWeatherContainer = styled.div`
   align-items: center;
   border-radius: 30px;
   background-color: rgba(255, 255, 255, 0.3);
+  justify-content: space-evenly;
+  `
+
+  const Icon = styled.img`
+    width: 120px;
+    height: 120px;
+  `
+
+  const CurrentWeatherInfoContainer = styled.div`
+    width: 275px;
+    height: 275px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
   `
