@@ -1,12 +1,14 @@
 import styled from "styled-components";
 import { useEffect, useReducer,Fragment } from "react";
-import {Header, Footer, MainContainer} from "../components"
+import {Header, Footer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
 import {searchPlaylistsByTag} from "../utils/spotifyAPI"
 import playicon from "../assets/images/play_icon.png"
 import back from "../assets/images/back_icon.png"
 import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFunctions";
 import {sites, weathers} from "../utils/data";
+import {Menu, SiteList, Main, PlayContainer, PlayCover, PlayButton, PlayDetail, PlayTitle, ButtonImg, Back, CurrentWeatherInfoContainer, CurrentWeatherContainer, Icon, MainContainer, City, Report, Special, MaxTemp, Temp, MinTemp, CurrentTemp, Text, ForcastContainer, DayContainer} from "../styles/StyledHome";
+import { fetchGradient } from "../styles/Gradient";
 
 
 function PlaylistContainer ({playlist}) {
@@ -24,10 +26,26 @@ function PlaylistContainer ({playlist}) {
 )};
 
 
-const CurrntWeather = ({currentWeatherInfo, weathers}) => {
+const special_report = (weather) => { //기상청 기준인데 기준 완화
+  if(weather.feels_like >= 33) {
+    return "폭염주의보"
+  }
+  if(weather.temp_min <= 12) {
+    return "한파주의보"
+  }
+  if(weather.wind_speed >= 14) {
+    return "강풍주의보"
+  }
+  if(weather.huminity <= 35) {
+    return "건조주의보"
+  }
+  return ""
+}
+
+const CurrntWeather = ({currentWeatherInfo}) => {
   const WeatherIcon = () => {
     const weather = weathers.find((weather) => weather.name === currentWeatherInfo.weather);
-    return <Icon src={weather.icon} alt={weather.name}/>
+    return <Icon src={weather.src} alt={weather.name}/>
   }
 
   return (
@@ -35,20 +53,37 @@ const CurrntWeather = ({currentWeatherInfo, weathers}) => {
       <WeatherIcon />
       <CurrentWeatherInfoContainer>
         <City>{currentWeatherInfo.cityName}</City>
-        <Time>{currentWeatherInfo.dt}</Time>
-        <Humidity></Humidity>
+        <Text>{currentWeatherInfo.dt}</Text>
+        <Report>
+          <Special>특보</Special>
+          {special_report(currentWeatherInfo) !== "" ? <Text>{special_report(currentWeatherInfo)}</Text> : <Text>특보 없음</Text>
+          }
+        </Report>
         <Temp>
           <CurrentTemp>{currentWeatherInfo.current_temp}</CurrentTemp>
-          <MaxMinTemp>{currentWeatherInfo.temp_min}/{currentWeatherInfo.temp_max}</MaxMinTemp>
+          <MinTemp>{currentWeatherInfo.temp_min}</MinTemp>/
+          <MaxTemp>{currentWeatherInfo.temp_max}</MaxTemp>
         </Temp>
-        <FeelsLike>{currentWeatherInfo.feels_like}</FeelsLike>
-        <WindSpeed></WindSpeed>
+        <Text>{currentWeatherInfo.feels_like}</Text>
+        <Text>습도 : {currentWeatherInfo.huminity}%</Text>
       </CurrentWeatherInfoContainer>
     </CurrentWeatherContainer>
   )
 }
 
-//[{cityName: '도시이름', dt: '날짜', current_temp: '현재온도', temp_max: '최고온도', temp_min: '최저온도', feels_like: '체감온도', weather: '날씨'}, .. ]
+const ForcastWeather = ({weather}) => {
+  const WeatherIcon = () => {
+    const weatherInfo = weathers.find((weather) => weather.name === weather.weather);
+    return <Icon src={weatherInfo.src} alt={weatherInfo.name}/>
+  };
+  return (
+    <DayContainer>
+      <WeatherIcon />
+      <Text>{weather.temp_min}/{weather.temp_min}</Text>
+    </DayContainer>
+  )
+}
+
 const initialState = { //초기값
   isMenuOpen: false,
   selectedItem: "Seoul",
@@ -89,23 +124,30 @@ export default function Home() {
     dispatch({ type: "SELECT_ITEM", payload: item });
   };
 
+  
   useEffect(() => {  //날씨 정보 가져오기
-    fetchCurrentWeatherData(selectedItem)
-    .then((data) => {
-      dispatch({ type: "SET_CURRENT_WEATHER_INFO", payload: data});
-      sessionStorage.setItem('currentWeather', JSON.stringify(data.weather));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-    fetchForecastData(selectedItem)
-    .then((data) => {
-      dispatch({ type: "SET_FORECAST_WEATHER_INFO", payload: data});
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  },[state.selectedItem]);
+    console.log("이펙트 실행");
+    fetchCurrentWeatherData(state.selectedItem)
+      .then((data) => {
+        dispatch({ type: "SET_CURRENT_WEATHER_INFO", payload: data });
+        sessionStorage.setItem('currentWeather', JSON.stringify(data.weather));
+        const setBackGround = fetchGradient(data.weather);
+  
+        document.body.style.background = setBackGround;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  
+    fetchForecastData(state.selectedItem)  // 수정된 부분
+      .then((data) => {
+        dispatch({ type: "SET_FORECAST_WEATHER_INFO", payload: data });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [state.selectedItem]);
+  
 
 
   useEffect(() => {  //날씨 태그에 따른 플레이리스트 검색
@@ -123,7 +165,7 @@ export default function Home() {
   return (
     <Fragment>
     <Header isMainPage={true} onMenuClick={handleToggleMenu}/>
-    {isMenuOpen && (
+    {state.isMenuOpen && (
       <MenuWrapper isOpen={state.isMenuOpen}>      
         <Menu>
         <div>
@@ -146,7 +188,7 @@ export default function Home() {
     )}
     <Main>
         {/* <AudioPlayer src={alarm} /> */}
-        <MainContainer variant={state.isPlaylist ? "row" : "column"}>
+        <MainContainer>
           <Back onClick={() => dispatch({type: "TOGGLE_PLAYLIST"})}>
             <ButtonImg src={back} alt="플레이리스트/날씨 보기"/>
           </Back>
@@ -158,7 +200,16 @@ export default function Home() {
               />
             ))
           ) : (
-            <div></div>
+            <Fragment>
+              <CurrntWeather currentWeatherInfo={state.currentWeatherInfo}/>
+              <ForcastContainer>
+                {state.forcastWeatherInfo.map((weather, idx) => (
+                  <ForcastWeather
+                    key={idx}
+                    weather={weather}
+                />))}
+             </ForcastContainer>
+            </Fragment>
           )}
         </MainContainer>
     </Main>
@@ -179,117 +230,3 @@ const MenuWrapper = styled.div`
   overflow: ${({ isOpen }) => (isOpen ? "auto" : "visible")};
   z-index: 1;
 `;
-
-const Menu = styled.div`
-  position: absolute;
-  top: 120px;
-  left: 0;
-  bottom: 0;
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #E0F3FE;
-`
-
-const SiteList = styled.li`
-  width: 140px;
-  height: 55px;
-  background-color: rgba(255, 255, 255, 0.3);
-  display: flex;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  list-style-type: none;
-  margin-bottom: 30px;
-  &:hover {
-    border-color: white;
-  }
-  &.selected {
-    border-color: white;
-  }
-`
-const Main = styled.main`
-  width: 1200px;
-  margin: 120px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
-
-const PlayContainer = styled.div`
-  width: 500px;
-  height: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 20px;
-  padding: 20px;
-  border-radius: 30px;
-  background-color: rgba(255, 255, 255, 0.3);
-`
-const PlayCover = styled.img`
-  width: 205px;
-  height: 205px;
-`
-
-const PlayDetail = styled.div`
-  width: 250px;
-  height: 140px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 5px;
-  align-items: start;
-  margin-left: 20px;
-`
-const PlayTitle = styled.h3`
-  font-size: 25px;
-  font-weight: 700;
-`
-
-
-const PlayButton = styled.button`
-  width: 40px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0);
-  padding: 0;
-  border-radius: 50%;
-`
-
-const ButtonImg = styled.img`
-  width: 40px;
-`
-const Back = styled.button`
-  position: absolute;
-  top: 13px;
-  left: 13px;
-  width: 40px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0);
-  padding: 0;
-  border-radius: 50%;
-`
-const CurrentWeatherContainer = styled.div`
-  width: 675px;
-  height: 340px;
-  display: flex;
-  align-items: center;
-  border-radius: 30px;
-  background-color: rgba(255, 255, 255, 0.3);
-  justify-content: space-evenly;
-  `
-
-  const Icon = styled.img`
-    width: 120px;
-    height: 120px;
-  `
-
-  const CurrentWeatherInfoContainer = styled.div`
-    width: 275px;
-    height: 275px;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-  `

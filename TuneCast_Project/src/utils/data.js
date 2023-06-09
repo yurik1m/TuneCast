@@ -22,8 +22,8 @@ export const sites = [{name: "서울", //지역, 위도, 경도
                   {name: "세종",
                   id: "Sejong", },
                 ];
-  export const weathers = [{name: "맑음",src: {sun}},    //날씨 + 아이콘 배열
-                    {name: "구름",src: {cloud}},
-                    {name: "비",src: {rain}},
-                    {name: "눈",src: {wsnow}},
-                    {name: "안개",src: {fog}}];
+  export const weathers = [{name: "Clear",src: {sun}},    //날씨 + 아이콘 배열
+                    {name: "Cloud",src: {cloud}},
+                    {name: "Rain",src: {rain}},
+                    {name: "Snow",src: {wsnow}},
+                    {name: "Fog",src: {fog}}];
