@@ -61,8 +61,8 @@ function CurrntWeather ({currentWeatherInfo}) {
         </Report>
         <Temp>
           <CurrentTemp>{currentWeatherInfo.current_temp}℃</CurrentTemp>
-          <MinTemp>{currentWeatherInfo.temp_min}</MinTemp>/
-          <MaxTemp>{currentWeatherInfo.temp_max}</MaxTemp>
+          <MinTemp>{currentWeatherInfo.temp_min}º</MinTemp>/
+          <MaxTemp> {currentWeatherInfo.temp_max}º</MaxTemp>
         </Temp>
         <Text>체감온도 : {currentWeatherInfo.feels_like}℃</Text>
         <Text>습도 : {currentWeatherInfo.humidity}%</Text>
@@ -79,7 +79,7 @@ function ForcastWeather ({weather})  {
   return (
     <DayContainer>
       <WeatherIcon />
-      <Text>{weather.temp_min}/{weather.temp_min}</Text>
+      <Text>{weather.temp_min}º /{weather.temp_min}º</Text>
     </DayContainer>
   )
 }
