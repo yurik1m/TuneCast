@@ -7,7 +7,7 @@ import playicon from "../assets/images/play_icon.png"
 import back from "../assets/images/back_icon.png"
 import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFunctions";
 import {sites, weathers} from "../utils/data";
-import {Menu, SiteList, Main, PlayContainer, PlayCover, PlayButton, PlayDetail, PlayTitle, ButtonImg, Back, CurrentWeatherInfoContainer, CurrentWeatherContainer, Icon, MainContainer, City, Report, Special, MaxTemp, Temp, MinTemp, CurrentTemp, Text, ForcastContainer, DayContainer} from "../styles/StyledHome";
+import {Menu, SiteList, Main, PlayContainer, PlayCover, PlayButton, PlayDetail, PlayTitle, ButtonImg, Back, CurrentWeatherInfoContainer, CurrentWeatherContainer, Icon, MainContainer, City, Report, Special, MaxTemp, Temp, MinTemp, CurrentTemp, Text, ForcastContainer, CurrentWeatherIcon,DayContainer, Weather} from "../styles/StyledHome";
 import { fetchGradient } from "../styles/Gradient";
 
 
@@ -42,10 +42,10 @@ const special_report = (weather) => { //기상청 기준인데 기준 완화
   return ""
 }
 
-const CurrntWeather = ({currentWeatherInfo}) => {
+function CurrntWeather ({currentWeatherInfo}) {
   const WeatherIcon = () => {
     const weather = weathers.find((weather) => weather.name === currentWeatherInfo.weather);
-    return <Icon src={weather.src} alt={weather.name}/>
+    return <CurrentWeatherIcon src={weather.src} alt={weather.name}/>
   }
 
   return (
@@ -60,20 +60,20 @@ const CurrntWeather = ({currentWeatherInfo}) => {
           }
         </Report>
         <Temp>
-          <CurrentTemp>{currentWeatherInfo.current_temp}</CurrentTemp>
+          <CurrentTemp>{currentWeatherInfo.current_temp}℃</CurrentTemp>
           <MinTemp>{currentWeatherInfo.temp_min}</MinTemp>/
           <MaxTemp>{currentWeatherInfo.temp_max}</MaxTemp>
         </Temp>
-        <Text>{currentWeatherInfo.feels_like}</Text>
-        <Text>습도 : {currentWeatherInfo.huminity}%</Text>
+        <Text>체감온도 : {currentWeatherInfo.feels_like}℃</Text>
+        <Text>습도 : {currentWeatherInfo.humidity}%</Text>
       </CurrentWeatherInfoContainer>
     </CurrentWeatherContainer>
   )
 }
 
-const ForcastWeather = ({weather}) => {
+function ForcastWeather ({weather})  {
   const WeatherIcon = () => {
-    const weatherInfo = weathers.find((weather) => weather.name === weather.weather);
+    const weatherInfo = weathers.find((w) => w.name === weather.weather);
     return <Icon src={weatherInfo.src} alt={weatherInfo.name}/>
   };
   return (
@@ -91,6 +91,7 @@ const initialState = { //초기값
   forcastWeatherInfo: [],
   playlist: [],
   isPlaylist: false,
+  isLoading: true,
 }
 
 const reducer = (state, action) => { 
@@ -121,19 +122,17 @@ export default function Home() {
   };
 
   const handleSelectItem = (item) => {
-    dispatch({ type: "SELECT_ITEM", payload: item });
+    dispatch({ type: "SELECT_ITEM", payload: item.id });
+    console.log(item);
   };
 
-  
+
   useEffect(() => {  //날씨 정보 가져오기
-    console.log("이펙트 실행");
     fetchCurrentWeatherData(state.selectedItem)
       .then((data) => {
         dispatch({ type: "SET_CURRENT_WEATHER_INFO", payload: data });
-        sessionStorage.setItem('currentWeather', JSON.stringify(data.weather));
         const setBackGround = fetchGradient(data.weather);
-  
-        document.body.style.background = setBackGround;
+        document.getElementById("root").style.backgroundImage = setBackGround;
       })
       .catch((error) => {
         console.log(error);
@@ -147,9 +146,7 @@ export default function Home() {
         console.log(error);
       });
   }, [state.selectedItem]);
-  
-
-
+ 
   useEffect(() => {  //날씨 태그에 따른 플레이리스트 검색
     searchPlaylistsByTag(state.currentWeatherInfo.weather, 4)
       .then((playlists) => {
@@ -159,9 +156,9 @@ export default function Home() {
         console.log(error);
       });
   }, [state.isPlaylist]);
+  
 
-
-
+  if(state.currentWeatherInfo.length !== 0) {
   return (
     <Fragment>
     <Header isMainPage={true} onMenuClick={handleToggleMenu}/>
@@ -199,18 +196,18 @@ export default function Home() {
                 playlist={playlist}
               />
             ))
-          ) : (
-            <Fragment>
+            ) : (
+            <Weather>
               <CurrntWeather currentWeatherInfo={state.currentWeatherInfo}/>
               <ForcastContainer>
                 {state.forcastWeatherInfo.map((weather, idx) => (
                   <ForcastWeather
                     key={idx}
                     weather={weather}
-                />))}
+                />))} 
              </ForcastContainer>
-            </Fragment>
-          )}
+            </Weather>
+            )} 
         </MainContainer>
     </Main>
     
@@ -218,7 +215,7 @@ export default function Home() {
     
     </Fragment>
   )
-
+}
 }
 
 const MenuWrapper = styled.div`

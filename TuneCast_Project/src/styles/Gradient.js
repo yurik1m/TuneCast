@@ -9,7 +9,7 @@
 // Fog -> Mist, Smoke, Hase
 const gradients = {
   Clear: "linear-gradient(to bottom, #A1C4FD, #C2E9FB)",
-  Cloud: "linear-gradient(to bottom, #89BCE0, #B7B7B7)",
+  Clouds: "linear-gradient(to bottom, #89BCE0, #B7B7B7)",
 
   Fog: "linear-gradient(to bottom, #A8CAC8, #FF5733)",
   Mist: "linear-gradient(to bottom, #A8CAC8, #FF5733)",

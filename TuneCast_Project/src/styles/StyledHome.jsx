@@ -124,7 +124,10 @@ export const CurrentWeatherContainer = styled.div`
   background-color: rgba(255, 255, 255, 0.3);
   justify-content: space-evenly;
   `
-
+  export const CurrentWeatherIcon = styled.img`
+    width: 250px;
+    height: 250px;
+  `
   export const Icon = styled.img`
     width: 120px;
     height: 120px;
@@ -148,10 +151,12 @@ export const CurrentWeatherContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 5px 0;
   `
 
   export const Text = styled.p`
     font-size: 20px;
+    margin: 5px 0;
   `
   export const Report = styled.div`
     width: 250px;
@@ -162,6 +167,7 @@ export const CurrentWeatherContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: start;
+    margin: 5px 0;
   `
   export const Special = styled.div`
     background-color: #FF8888;
@@ -169,11 +175,16 @@ export const CurrentWeatherContainer = styled.div`
     width: 50px;
     height: 40px;
     border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
   `
 
   export const Temp = styled.div`
     display: flex;
     align-items: end;
+    margin: 5px 0;
   `
 
   export const CurrentTemp = styled.p`
@@ -199,6 +210,7 @@ export const CurrentWeatherContainer = styled.div`
     border-radius: 30px;
     background-color: rgba(255, 255, 255, 0.3);
     justify-content: space-evenly;
+    margin-top: 20px;
   `
   export const DayContainer = styled.div`
     width: 150px;
@@ -207,4 +219,11 @@ export const CurrentWeatherContainer = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
+  `
+
+  export const Weather = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   `
