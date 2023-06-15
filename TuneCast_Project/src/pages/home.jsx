@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 import { useEffect, useReducer,Fragment } from "react";
 import {Header, Footer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
@@ -13,16 +14,18 @@ import { fetchGradient } from "../styles/Gradient";
 
 function PlaylistContainer ({playlist}) {
   return (
-    <PlayContainer>
-      <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
-      <PlayDetail>
-        <PlayTitle>{playlist.name}</PlayTitle>
-        <p>spotify</p>
-        <PlayButton>
-          <ButtonImg src={playicon} alt="play"/>
-        </PlayButton>
-      </PlayDetail>
-   </PlayContainer>
+    <Link to={`home/${playlist}`}>
+      <PlayContainer>
+        <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
+        <PlayDetail>
+          <PlayTitle>{playlist.name}</PlayTitle>
+          <p>spotify</p>
+          <PlayButton>
+            <ButtonImg src={playicon} alt="play"/>
+          </PlayButton>
+        </PlayDetail>
+     </PlayContainer>
+   </Link>
 )};
 
 

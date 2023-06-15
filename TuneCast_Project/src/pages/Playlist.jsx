@@ -7,6 +7,9 @@ import spotify from '../assets/images/spotify.png';
 import ListBackground from '../assets/images/listbackground.png';
 import Upperbackground from '../assets/images/upperbackground.png'
 import { styled } from 'styled-components';
+import { useParams } from 'react-router-dom';
+import { getPlaylistTracks } from '../utils/spotifyAPI';
+import { useEffect } from 'react';
 
 // const TrackBlock = (playlistname) => {
   
@@ -17,6 +20,19 @@ import { styled } from 'styled-components';
 
 
 function Playlist() {
+  const { playlistname } = useParams();
+  const [tract,setTrack] = useState([]);
+  
+  // 플레이리스트 받기
+  useEffect(() => {
+    getPlaylistTracks(playlistname)
+    .then((data) => {
+      setTrack(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }, []);
   const music = [
     {
       Song: "All I Wanna Do",
