@@ -48,6 +48,7 @@ const special_report = (weather) => { //기상청 기준인데 기준 완화
 function CurrntWeather ({currentWeatherInfo}) {
   const WeatherIcon = () => {
     const weather = weathers.find((weather) => weather.name === currentWeatherInfo.weather);
+    console.log(weathers);
     return <CurrentWeatherIcon src={weather.src} alt={weather.name}/>
   }
 
@@ -136,6 +137,7 @@ export default function Home() {
         dispatch({ type: "SET_CURRENT_WEATHER_INFO", payload: data });
         const setBackGround = fetchGradient(data.weather);
         document.getElementById("root").style.backgroundImage = setBackGround;
+        console.log(data);
       })
       .catch((error) => {
         console.log(error);
@@ -217,6 +219,10 @@ export default function Home() {
     <Footer />
     
     </Fragment>
+  )
+} else {
+  return (
+    <diV>로딩중</diV>
   )
 }
 }
