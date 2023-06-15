@@ -9,12 +9,12 @@
 // Fog -> Mist, Smoke, Hase
 const gradients = {
   Clear: "linear-gradient(to bottom, #A1C4FD, #C2E9FB)",
-  Clouds: "linear-gradient(to bottom, #89BCE0, #B7B7B7)",
+  Clouds: "linear-gradient(to bottom, #89BCE0, #93B7B5)",
 
-  Fog: "linear-gradient(to bottom, #A8CAC8, #FF5733)",
-  Mist: "linear-gradient(to bottom, #A8CAC8, #FF5733)",
-  Smoke: "linear-gradient(to bottom, #A8CAC8, #FF5733)",
-  Haze: "linear-gradient(to bottom, #A8CAC8, #FF5733)",
+  Fog: "linear-gradient(to bottom, #A8CAC8, #B7B7B7)",
+  Mist: "linear-gradient(to bottom, #A8CAC8, #B7B7B7)",
+  Smoke: "linear-gradient(to bottom, #A8CAC8, #B7B7B7)",
+  Haze: "linear-gradient(to bottom, #A8CAC8, #B7B7B7)",
 
 
   Rain: "linear-gradient(to bottom, #2B5876, #4E4376)",
@@ -26,4 +26,15 @@ const gradients = {
 
 export function fetchGradient(weather) {
   return gradients[weather];
+}
+
+export function fetchColors() {
+  const clear = ["#C2E9FB", "#A1C4FD"];
+  const clouds = ["#93B7B5", "#89BCE0"];
+  const fog = ["#B7B7B7", "#A8CAC8"];
+  const rain = ["#4E4376", "#2B5876"];
+  const snow = ["#F3E7E9", "#DAD4EC"];
+  
+
+  return [clear, clouds, fog, rain, snow];
 }
