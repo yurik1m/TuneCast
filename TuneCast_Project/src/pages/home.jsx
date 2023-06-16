@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 import { useEffect, useReducer,Fragment } from "react";
 import {Header, Footer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
@@ -9,20 +10,23 @@ import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFu
 import {sites, weathers} from "../utils/data";
 import {Menu, SiteList, Main, PlayContainer, PlayCover, PlayButton, PlayDetail, PlayTitle, ButtonImg, Back, CurrentWeatherInfoContainer, CurrentWeatherContainer, Icon, MainContainer, City, Report, Special, MaxTemp, Temp, MinTemp, CurrentTemp, Text, ForcastContainer, CurrentWeatherIcon,DayContainer, Weather} from "../styles/StyledHome";
 import { fetchGradient } from "../styles/Gradient";
+import "../styles/spinner.css";
 
 
 function PlaylistContainer ({playlist}) {
   return (
-    <PlayContainer>
-      <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
-      <PlayDetail>
-        <PlayTitle>{playlist.name}</PlayTitle>
-        <p>spotify</p>
-        <PlayButton>
-          <ButtonImg src={playicon} alt="play"/>
-        </PlayButton>
-      </PlayDetail>
-   </PlayContainer>
+    <Link to={`home/${playlist}`}>
+      <PlayContainer>
+        <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
+        <PlayDetail>
+          <PlayTitle>{playlist.name}</PlayTitle>
+          <p>spotify</p>
+          <PlayButton>
+            <ButtonImg src={playicon} alt="play"/>
+          </PlayButton>
+        </PlayDetail>
+     </PlayContainer>
+   </Link>
 )};
 
 
@@ -45,6 +49,7 @@ const special_report = (weather) => { //기상청 기준인데 기준 완화
 function CurrntWeather ({currentWeatherInfo}) {
   const WeatherIcon = () => {
     const weather = weathers.find((weather) => weather.name === currentWeatherInfo.weather);
+    console.log(weathers);
     return <CurrentWeatherIcon src={weather.src} alt={weather.name}/>
   }
 
@@ -133,6 +138,7 @@ export default function Home() {
         dispatch({ type: "SET_CURRENT_WEATHER_INFO", payload: data });
         const setBackGround = fetchGradient(data.weather);
         document.getElementById("root").style.backgroundImage = setBackGround;
+        console.log(data);
       })
       .catch((error) => {
         console.log(error);
@@ -214,6 +220,13 @@ export default function Home() {
     <Footer />
     
     </Fragment>
+  )
+} else {
+  return (
+    <div class="loadingio-spinner-rolling-ow5spfue44k"><div class="ldio-osnzl6m5ejj">
+    <div></div>
+    </div></div>
+   
   )
 }
 }
