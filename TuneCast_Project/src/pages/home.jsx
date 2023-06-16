@@ -10,6 +10,7 @@ import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFu
 import {sites, weathers} from "../utils/data";
 import {Menu, SiteList, Main, PlayContainer, PlayCover, PlayButton, PlayDetail, PlayTitle, ButtonImg, Back, CurrentWeatherInfoContainer, CurrentWeatherContainer, Icon, MainContainer, City, Report, Special, MaxTemp, Temp, MinTemp, CurrentTemp, Text, ForcastContainer, CurrentWeatherIcon,DayContainer, Weather} from "../styles/StyledHome";
 import { fetchGradient } from "../styles/Gradient";
+import "../styles/spinner.css";
 
 
 function PlaylistContainer ({playlist}) {
@@ -222,7 +223,10 @@ export default function Home() {
   )
 } else {
   return (
-    <diV>로딩중</diV>
+    <div class="loadingio-spinner-rolling-ow5spfue44k"><div class="ldio-osnzl6m5ejj">
+    <div></div>
+    </div></div>
+   
   )
 }
 }
