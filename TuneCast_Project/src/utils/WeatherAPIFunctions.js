@@ -57,6 +57,8 @@ export async function fetchCurrentWeatherData(city) {
     temp_min: fetchData.main.temp_min,
     feels_like: fetchData.main.feels_like,
     weather: fetchData.weather[0].main,
+    humidity: fetchData.main.humidity,
+    wind_speed: fetchData.wind.speed,
   };
   return currentData;
 }

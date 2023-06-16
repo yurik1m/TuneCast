@@ -1,16 +1,13 @@
-import '../styles/App.css';
-import '../styles/index.css';
 import '../styles/Playlist.css';
 import heart from '../assets/images/heart_icon.png';
-import playicon from '../assets/images/play_icon.png'
+import playicon from '/etc/play_icon.png'
 import spotify from '../assets/images/spotify.png';
 import ListBackground from '../assets/images/listbackground.png';
 import { styled } from 'styled-components';
 import {Header, Footer} from '../components'
-import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFunctions";
-import {sites, weathers} from "../utils/data";
-import { fetchGradient } from "../styles/Gradient";
 import { useEffect, useReducer, Fragment } from "react";
+import { useParams } from 'react-router-dom';
+import { getPlaylistTracks } from '../utils/spotifyAPI';
 
 
  function TrackBlock ({playlistname}) {
@@ -24,6 +21,19 @@ import { useEffect, useReducer, Fragment } from "react";
 
 
 function Playlist() {
+  const { playlistname } = useParams();
+  const [tract,setTrack] = useState([]);
+  
+  // 플레이리스트 받기
+  useEffect(() => {
+    getPlaylistTracks(playlistname)
+    .then((data) => {
+      setTrack(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }, []);
   const music = [
     {
       Song: "All I Wanna Do",
@@ -113,7 +123,7 @@ const Title = styled.p `
   position: absolute;
   font-family: 'Inter';
   font-style: normal;
-  font-weight; bold;
+  font-weight: bold;
   font-size: 80px;
   line-height: 30px;
   float: left;
@@ -199,7 +209,7 @@ const NameInfo = styled.div`
   width: 164px;
   display: flex; 
   flex-direction: column;
-  justify-contents: flex-start;
+  justify-content: flex-start;
 `
 const Hline = styled.p`
     border-bottom: thin solid #FFF;

@@ -5,11 +5,11 @@ export default function Footer() {
     const currentYear = new Date().getFullYear();
     return(
         <StyledFooter>
-            {/* <Link to="/"> */}
+            <Link to="/member">
                 <StyledA>
                     <Tooltip>{currentYear} &copy;TuneCast</Tooltip>
                 </StyledA>
-            {/* </Link> */}
+            </Link>
         </StyledFooter>
     );
 }
