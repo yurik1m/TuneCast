@@ -180,6 +180,8 @@ function ChartView() {
                 {isEmpty[1] ? <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText>  :
                     <ChartContainer>
                         <Text>이달의 좋아요한 플레이리스트</Text>
+                        <ChartText>맑음</ChartText>
+                        <ChartText2>45%</ChartText2>
                         <Doughnut data={playlist_data} options={playlist_options} />
                     </ChartContainer>
                 }
@@ -234,6 +236,25 @@ const ChartContainer = styled.div`
     flex-direction: column;
     padding: 100px 100px;
 `
+const ChartText = styled.p`
+    position: relative;
+    top: 50%;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+`
+const ChartText2 = styled.p`
+    position: relative;
+    top: 55%;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 50px;
+`
+
 const Vline = styled.p`
     border-left: 2px solid rgba(255, 255, 255, 0.5);
     height: 70%;
