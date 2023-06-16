@@ -1,22 +1,23 @@
-import '../styles/App.css';
-import '../styles/index.css';
 import '../styles/Playlist.css';
 import heart from '../assets/images/heart_icon.png';
-import playicon from '../assets/images/play_icon.png'
+import playicon from '/etc/play_icon.png'
 import spotify from '../assets/images/spotify.png';
 import ListBackground from '../assets/images/listbackground.png';
-import Upperbackground from '../assets/images/upperbackground.png'
 import { styled } from 'styled-components';
+import {Header, Footer} from '../components'
+import { useEffect, useReducer, Fragment } from "react";
 import { useParams } from 'react-router-dom';
 import { getPlaylistTracks } from '../utils/spotifyAPI';
-import { useEffect } from 'react';
 
-// const TrackBlock = (playlistname) => {
-  
-//   return (
-    
-//   )
-// }
+
+ function TrackBlock ({playlistname}) {
+
+   return (
+    <TrackContainer>
+
+    </TrackContainer>
+   )
+ }
 
 
 function Playlist() {
@@ -43,23 +44,25 @@ function Playlist() {
   ];
     
   return (
+    <Fragment>
+    <Header />
     <Container>
-      <MainContainer style={{backgroundImage: Upperbackground}}>
-        <Title style={{top:450, left:83}}>Sunny Mix</Title>
-        <Main style={{top:535, left: 83}}>플레이리스트에 대한 설명이 들어갑니다.</Main>
-        <ImgSubTitle style={{top:600, left:83}}>Spotify</ImgSubTitle> 
-        <Spotify style={{top: 591, left: 238}} src={spotify}/>
-        <ImgSubTitle style={{top: 600, left: 281}}>147</ImgSubTitle> 
-        <Heart style={{top: 591, left: 486}} src={heart}/>
-        <PlayIcon style={{top: 531, left: 960}} src={playicon}/>
+      <MainContainer style={{top:266, left:116}}>
+        <Title style={{top:142, left:58}}>Sunny Mix</Title>
+        <Main style={{top:290, left:67}}>플레이리스트에 대한 설명이 들어갑니다.</Main>
+        <ImgSubTitle style={{top:333, left:67}}>Spotify</ImgSubTitle> 
+        <Spotify style={{top:347, left:222}} src={spotify}/>
+        <ImgSubTitle style={{top:333, left:265}}>147</ImgSubTitle> 
+        <Heart style={{top:347, left:370}} src={heart}/>
+        <PlayIcon style={{top:266, left:1020}} src={playicon}/>
       </MainContainer>
-    <br></br>
-      <MusicList>
-        <UpperMusiclist style={{top: 772, left: 45}}>#</UpperMusiclist>
-        <UpperMusiclist style={{top: 772, left: 105}}>제목</UpperMusiclist>
-        <UpperMusiclist style={{top: 772, left: 615}}>앨범</UpperMusiclist> 
-        <UpperMusiclist style={{top: 772, left: 1079, width:80, height:25}}>좋아요</UpperMusiclist> 
-        <br></br>
+    <Hline style={{top:700, left:120, width:1200}}></Hline>
+      <MusicList style={{top: 770, left:116}}>
+        <UpperMusiclist style={{top: 30, left: 45}}>#</UpperMusiclist>
+        <UpperMusiclist style={{top: 30, left: 105}}>제목</UpperMusiclist>
+        <UpperMusiclist style={{top: 30, left: 615}}>앨범</UpperMusiclist> 
+        <UpperMusiclist style={{top: 30, left: 1079, width:80, height:25}}>좋아요</UpperMusiclist> 
+        <Hline style={{top:71, left:30, width:1140}}></Hline>
         <Music>
           {music.map((music, index) => (
             <>
@@ -81,6 +84,8 @@ function Playlist() {
         </Music>
       </MusicList>
     </Container> 
+    <Footer />
+    </Fragment>
   )
 }
 export default Playlist;
@@ -91,10 +96,12 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
+  align-items: center;
 `
 const MainContainer = styled.div`
   height: 400px;
   width: 1200px;
+  position: absolute;
   display: flex;
   justify-content: flex-start;
   align-items: end;
@@ -107,6 +114,7 @@ const MainContainer = styled.div`
 const MusicList = styled.div `
   height: 1441px;
   width: 1200px;
+  position: absolute;
   flex-direction: column;
   border-radius: 10%;
   background-color: rgba(255, 255, 255, 0.3);
@@ -202,4 +210,16 @@ const NameInfo = styled.div`
   display: flex; 
   flex-direction: column;
   justify-content: flex-start;
+`
+const Hline = styled.p`
+    border-bottom: thin solid #FFF;
+    position: absolute;
+`
+const TrackContainer = styled.div`
+  width: 1097px;
+  height: 70px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-contents: center;
 `
