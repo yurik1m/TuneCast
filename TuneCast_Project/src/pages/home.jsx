@@ -4,7 +4,6 @@ import { useEffect, useReducer,Fragment } from "react";
 import {Header, Footer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
 import {searchPlaylistsByTag} from "../utils/spotifyAPI"
-import playicon from "../assets/images/play_icon.png"
 import back from "../assets/images/back_icon.png"
 import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFunctions";
 import {sites, weathers} from "../utils/data";
@@ -15,14 +14,14 @@ import "../styles/spinner.css";
 
 function PlaylistContainer ({playlist}) {
   return (
-    <Link to={`home/${playlist}`}>
+    <Link to={`/home/${playlist.name}`}>
       <PlayContainer>
         <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
         <PlayDetail>
           <PlayTitle>{playlist.name}</PlayTitle>
           <p>spotify</p>
           <PlayButton>
-            <ButtonImg src={playicon} alt="play"/>
+            <ButtonImg src="/etc/play_icon.png" alt="play"/>
           </PlayButton>
         </PlayDetail>
      </PlayContainer>
@@ -49,7 +48,6 @@ const special_report = (weather) => { //기상청 기준인데 기준 완화
 function CurrntWeather ({currentWeatherInfo}) {
   const WeatherIcon = () => {
     const weather = weathers.find((weather) => weather.name === currentWeatherInfo.weather);
-    console.log(weathers);
     return <CurrentWeatherIcon src={weather.src} alt={weather.name}/>
   }
 
@@ -138,7 +136,6 @@ export default function Home() {
         dispatch({ type: "SET_CURRENT_WEATHER_INFO", payload: data });
         const setBackGround = fetchGradient(data.weather);
         document.getElementById("root").style.backgroundImage = setBackGround;
-        console.log(data);
       })
       .catch((error) => {
         console.log(error);

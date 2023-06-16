@@ -2,7 +2,7 @@ import '../styles/App.css';
 import '../styles/index.css';
 import '../styles/Playlist.css';
 import heart from '../assets/images/heart_icon.png';
-import playicon from '../assets/images/play_icon.png'
+import playicon from '/etc/play_icon.png'
 import spotify from '../assets/images/spotify.png';
 import ListBackground from '../assets/images/listbackground.png';
 import Upperbackground from '../assets/images/upperbackground.png'
