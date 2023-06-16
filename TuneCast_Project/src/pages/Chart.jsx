@@ -11,6 +11,15 @@ function checkIsEmpty(values) {
     return values.every(val => val == 0);
 }
 
+function getPercent(playlists) {
+    const playlist_values = Object.values(playlists);
+
+    const playlist_sum = playlist_values.reduce((a, b) => a + b, 0);
+    const playlist_percent = playlist_values.map(val => (val / playlist_sum * 100).toFixed(2));
+
+    return playlist_percent;
+}
+
 function getGradient(ctx, chartArea) {
 
     let width, height, gradient1, gradient2, gradient3, gradient4, gradient5;
