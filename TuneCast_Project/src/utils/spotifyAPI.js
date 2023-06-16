@@ -1,29 +1,42 @@
 import axios from 'axios';
+import { Buffer } from 'buffer';
 
-const client_id = process.env.REACT_APP_CLIENT_ID;
-const client_secret = process.env.REACT_APP_CLIENT_SECRET;
+
+window.Buffer = window.Buffer || Buffer;
+
+const client_id = import.meta.env.VITE_CLIENT_ID;
+const client_secret = import.meta.env.VITE_CLIENT_SECRET;
 const auth = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
 
 //스포티파이 API를 사용하기 위한 토큰을 받아오는 함수
 async function getAccessToken() {
   try {
+    const params = new URLSearchParams();
+
     const response = await axios({
       url: 'https://accounts.spotify.com/api/token',
       method: 'post',
-      params: {
+      data: {
         grant_type: 'client_credentials',
       },
       headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Basic ' + auth,
       },
     });
 
     return response.data.access_token;
   } catch (error) {
-    console.error('Error getting access token:', error);
+    console.log('Error getting access token:', error.message);
+    console.log('Response data:', error.response.data);
+    console.log(auth)
+    console.log(Buffer.from('dW5kZWZpbmVkOnVuZGVmaW5lZA==', 'base64').toString('utf-8'));
     throw error;
   }
-}
+};
+
+
+
 
 //날씨 태그로 플레이리스트 검색하기 위한 함수
 //반환되는 배열의 형태는 다음과 같다.
@@ -43,7 +56,7 @@ export async function searchPlaylistsByTag(tag, limit = 4) {
       url: apiUrl,
       method: 'get',
       headers: {
-        'Authorization': 'Bearer ' + accessToken,
+        Authorization: 'Bearer ' + accessToken,
       },
     });
 
@@ -52,6 +65,7 @@ export async function searchPlaylistsByTag(tag, limit = 4) {
 
     playlists.forEach((playlist) => {
       const playlistInfo = {
+        id: playlist.id,
         name: playlist.name,
         cover: playlist.images.length > 0 ? playlist.images[0].url : null,
       };
@@ -79,8 +93,7 @@ export async function searchPlaylistsByTag(tag, limit = 4) {
 //플레이리스트의 트랙들을 검색하는 함수 
 //결과가 반환되는 배열의 형태는 다음과 같다.
 // [
-//   { name: '곡1', cover: 'url1', album: '앨범1', artist: '아티스트1' },
-//   { name: '곡2', cover: 'url2', album: '앨범2', artist: '아티스트2' },
+ //   { name: '곡2', cover: 'url2', album: '앨범2', artist: '아티스트2' },
 //   ...
 // ]
 export async function getPlaylistTracks(playlistName) {
@@ -92,11 +105,11 @@ export async function getPlaylistTracks(playlistName) {
       url: apiUrl,
       method: 'get',
       headers: {
-        'Authorization': 'Bearer ' + accessToken,
+        Authorization: 'Bearer ' + accessToken,
       },
     });
 
-    const tracks = playlistResponse.data.items;
+    const tracks = response.data.items;
 
     const trackDetails = await Promise.all(tracks.map(async (track) => {
       const trackUrl = `https://api.spotify.com/v1/tracks/${encodeURIComponent(track.track.id)}`;

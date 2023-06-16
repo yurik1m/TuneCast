@@ -19,10 +19,12 @@ function Header({ isMainPage, onMenuClick }) { //main페이지에서만 isMainPa
           <img src={backicon} alt="back"/>
         </IconButton>
       )}
-      <Logo>TuneCast</Logo>
-      {/* <Link to="/"> */}
-      <img src={avataricon} alt={"Avatar"} />
-      {/* </Link> */}
+      <Link to="/">
+        <Logo>TuneCast</Logo>
+      </Link>
+      <Link to="/mypage">
+        <img src={avataricon} alt={"Avatar"} />
+      </Link>
     </HeaderContainer>
   );
 }
