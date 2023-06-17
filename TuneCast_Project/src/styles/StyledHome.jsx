@@ -227,3 +227,4 @@ export const CurrentWeatherContainer = styled.div`
     align-items: center;
     justify-content: center;
   `
+

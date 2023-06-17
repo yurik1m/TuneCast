@@ -14,6 +14,7 @@
     "buffer": "^6.0.3",
     "install": "^0.13.0",
     "react": "^18.2.0",
+    "react-animated-heart": "^0.0.8",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1",
     "semantic-ui-css": "^2.5.0",

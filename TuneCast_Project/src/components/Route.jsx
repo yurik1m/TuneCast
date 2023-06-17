@@ -10,7 +10,8 @@ export default function Router() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/member" element={<MemberPage />} />
-        <Route pathe="/home/:playlist" element={<Playlist/>}/>
+        <Route path="/playlist" exact element={<Playlist />} />
+        <Route path="/playlist/:id" element={<Playlist/>} />
         <Route path="/mypage" element={<Chart />}/>
       </Routes>
     </BrowserRouter>

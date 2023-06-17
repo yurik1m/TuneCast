@@ -3252,6 +3252,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"goober@npm:^2.1.13":
+  version: 2.1.13
+  resolution: "goober@npm:2.1.13"
+  peerDependencies:
+    csstype: ^3.0.10
+  checksum: 0c00b90d26d1a2fad432e311fd4f47bc9fef1eee2a733158d9e2c72a89cf76d414090d063a8d20fe378f2b2b8087df0a83b0f00a3244d1466b97a0d3b14344a7
+  languageName: node
+  linkType: hard
+
 "gopd@npm:^1.0.1":
   version: 1.0.1
   resolution: "gopd@npm:1.0.1"
@@ -4339,6 +4348,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-animated-heart@npm:^0.0.8":
+  version: 0.0.8
+  resolution: "react-animated-heart@npm:0.0.8"
+  dependencies:
+    goober: ^2.1.13
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    typescript: ^4.7.4
+  checksum: 80df6ae7d7a8777a938793d8de9cc343fc04d685da0780b4ad9056905d612ffabcb46f7699386e3e9048859744b7b1a54e5bc0eb70978bbeddf22e4ad5e974e8
+  languageName: node
+  linkType: hard
+
 "react-dom@npm:^18.2.0":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
@@ -5023,6 +5044,7 @@ __metadata:
     eslint-plugin-react-refresh: ^0.3.4
     install: ^0.13.0
     react: ^18.2.0
+    react-animated-heart: ^0.0.8
     react-dom: ^18.2.0
     react-router-dom: ^6.11.1
     semantic-ui-css: ^2.5.0
@@ -5056,6 +5078,26 @@ __metadata:
     for-each: ^0.3.3
     is-typed-array: ^1.1.9
   checksum: 2228febc93c7feff142b8c96a58d4a0d7623ecde6c7a24b2b98eb3170e99f7c7eff8c114f9b283085cd59dcd2bd43aadf20e25bba4b034a53c5bb292f71f8956
+  languageName: node
+  linkType: hard
+
+"typescript@npm:^4.7.4":
+  version: 4.9.5
+  resolution: "typescript@npm:4.9.5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.7.4#~builtin<compat/typescript>":
+  version: 4.9.5
+  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: ab417a2f398380c90a6cf5a5f74badd17866adf57f1165617d6a551f059c3ba0a3e4da0d147b3ac5681db9ac76a303c5876394b13b3de75fdd5b1eaa06181c9d
   languageName: node
   linkType: hard
 

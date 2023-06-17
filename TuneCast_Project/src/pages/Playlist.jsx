@@ -1,32 +1,98 @@
 import '../styles/Playlist.css';
-import heart from '../assets/images/heart_icon.png';
+import fillHeart from '../assets/images/fill_heart.png';
 import playicon from '/etc/play_icon.png'
 import spotify from '../assets/images/spotify.png';
 import ListBackground from '../assets/images/listbackground.png';
-import { styled } from 'styled-components';
-import {Header, Footer} from '../components'
-import { useEffect, useReducer, Fragment } from "react";
-import { useParams } from 'react-router-dom';
+import { styled, keyframes} from 'styled-components';
+import {Header, Footer} from '../components';
+import Heart from "react-animated-heart";
+import { useEffect, useState, Fragment } from "react";
+import { useLocation } from 'react-router-dom';
 import { getPlaylistTracks } from '../utils/spotifyAPI';
 
 
- function TrackBlock ({playlistname}) {
-
+ function TrackBlock ({track, index, count, setCount}) {
+  const [isClick, setIsClick] = useState(false);
    return (
     <TrackContainer>
-
+      <TrackNumber>{index}</TrackNumber>
+      <TrackCover src={track.cover}/>
+      <TrackMainBlock>
+        <TrackTitle>{track.name}</TrackTitle>
+        <TrackArtist>{track.artist}</TrackArtist>
+      </TrackMainBlock>
+      <TrackAlbum>{track.album}</TrackAlbum>
+      <Heart isClick={isClick} onClick={() =>{
+            setIsClick(!isClick);
+            if(isClick){
+              setCount(count-1);
+            } else {
+              setCount(count+1);
+            };
+      }}
+      />
     </TrackContainer>
    )
  }
 
+ const PlaylistCover = ({playlist, count, setCount}) => {
+  const [isClick, setIsClick] = useState(false);
+  const cover = playlist.cover;
+  return (
+    <MainContainer cover={cover}>
+      <Transparent/>
+      <Title >{playlist.name}</Title>
+      <SubContainer>
+        <Icon>
+          <ImgSubTitle >Spotify</ImgSubTitle> 
+          <Img src={spotify}/>
+          <Heart isClick={isClick} onClick={() =>{
+            setIsClick(!isClick);
+            if(isClick){
+              setCount(count-1);
+            } else {
+              setCount(count+1);
+            };
+      }} />
+        </Icon>
+        <PlayIcon src={playicon}/>
+      </SubContainer>
+  </MainContainer>
+  )
+ }
 
 function Playlist() {
-  const { playlistname } = useParams();
-  const [tract,setTrack] = useState([]);
+  //값 받아오기
+  const location = useLocation();
+  const playlist = location.state.data;
+  let weather = location.state.weather;
+
+  const [track,setTrack] = useState([]); //플레이리스트 트랙
+  const [count, setCount] = useState(0); //선호도
   
-  // 플레이리스트 받기
+  const preference = JSON.parse(localStorage.getItem("Preference"));
+  
+  //로컬스토리지에 저장
   useEffect(() => {
-    getPlaylistTracks(playlistname)
+    if(weather === "Clear") {
+      preference.Clear = count;
+    }else if(weather === "Clouds") {
+      preference.Clouds = count;
+    }else if(weather === "Rain") {
+      preference.Rain = count;
+    }else if(weather === "Snow") {
+      preference.Snow = count;
+    }else if(weather === "Fog") {
+      preference.Fog = count;
+    }else {
+      preference.Etc = count;
+    };
+    localStorage.setItem("Preference", JSON.stringify(preference));
+  }, [count]);
+
+  // // 플레이리스트 받기
+  useEffect(() => {
+    getPlaylistTracks(playlist.id)
     .then((data) => {
       setTrack(data);
     })
@@ -34,54 +100,26 @@ function Playlist() {
       console.log(error);
     });
   }, []);
-  const music = [
-    {
-      Song: "All I Wanna Do",
-      Singer: "Sheryl Crow", 
-      Album: "Tuesday Night Music Club",
-      Image: ListBackground,
-    }
-  ];
-    
+
   return (
     <Fragment>
     <Header />
     <Container>
-      <MainContainer style={{top:266, left:116}}>
-        <Title style={{top:142, left:58}}>Sunny Mix</Title>
-        <Main style={{top:290, left:67}}>플레이리스트에 대한 설명이 들어갑니다.</Main>
-        <ImgSubTitle style={{top:333, left:67}}>Spotify</ImgSubTitle> 
-        <Spotify style={{top:347, left:222}} src={spotify}/>
-        <ImgSubTitle style={{top:333, left:265}}>147</ImgSubTitle> 
-        <Heart style={{top:347, left:370}} src={heart}/>
-        <PlayIcon style={{top:266, left:1020}} src={playicon}/>
-      </MainContainer>
-    <Hline style={{top:700, left:120, width:1200}}></Hline>
-      <MusicList style={{top: 770, left:116}}>
-        <UpperMusiclist style={{top: 30, left: 45}}>#</UpperMusiclist>
-        <UpperMusiclist style={{top: 30, left: 105}}>제목</UpperMusiclist>
-        <UpperMusiclist style={{top: 30, left: 615}}>앨범</UpperMusiclist> 
-        <UpperMusiclist style={{top: 30, left: 1079, width:80, height:25}}>좋아요</UpperMusiclist> 
-        <Hline style={{top:71, left:30, width:1140}}></Hline>
-        <Music>
-          {music.map((music, index) => (
-            <>
-            <MusicBlock key={index}> 
-              <SongInfo style={{left: 45}}>1</SongInfo>
-              {music.Image && (
-                <img src={music.Image} width ="70px" height="70px"/>
-              )}
-              <NameInfo>
-                <SongName style={{left: 105}}>All I Wanna Do</SongName>
-                <SongInfo style={{left: 105}}>Sheryl Crow</SongInfo>
-              </NameInfo>
-              <SongInfo style={{left: 615}}>Tuesday Night Music Club</SongInfo>
-              <Heart style={{left: 1112}}></Heart>
-            </MusicBlock>
-            {index !== 20}
-            </>
+     <PlaylistCover playlist={playlist} weather={weather} count={count} setCount={setCount}/>
+      <Hline > </Hline>
+      <MusicList >
+        <SubContainer>
+          <TrackNumber >#</TrackNumber>
+          <UpperMusiclist >제목</UpperMusiclist>
+          <TrackAlbum >앨범</TrackAlbum> 
+          <TrackArtist>좋아요</TrackArtist> 
+        </SubContainer>
+        <Hline />
+        <ul>
+          {track.map((track, index) => (
+            <TrackBlock track={track} index={index+1} count={count} setCount={setCount}/>
           ))}
-        </Music>
+        </ul>
       </MusicList>
     </Container> 
     <Footer />
@@ -90,136 +128,167 @@ function Playlist() {
 }
 export default Playlist;
 
+const slideAnimation = keyframes`
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+  `;
+
+
 const Container = styled.div`
-  height: 2415px;
-  width: 1440px;
+  width: 1200px;
+  margin: 120px auto;
   display: flex;
-  justify-content: center;
   flex-direction: column;
   align-items: center;
 `
 const MainContainer = styled.div`
-  height: 400px;
+  height: 450px;
   width: 1200px;
+  position: relative;
+  display: flex;
+  margin: 60px 120px;
+  justify-content: flex-end;
+  align-items: start;
+  flex-direction: column;
+  border-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 60px;
+
+  ${(props) =>
+    props.cover
+      ? `background-image: url(${props.cover});`
+      : ''};
+`
+
+const Transparent = styled.div`
   position: absolute;
+  height: 450px;
+  width: 1200px;
+  border-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.5);
+  top: 0;
+  left: 0;
+`
+
+const SubContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 5;
+  margin-bottom: 15px;
+  padding: 0 20px;
+`
+
+const Icon = styled.div`
   display: flex;
   justify-content: flex-start;
-  align-items: end;
-  flex-direction: column;
-  border-radius: 10%;
-  background-image: url(./upperbackground.png); 
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 5px 5px 5px 5px;
+  align-items: center;
+  z-index: 5;
 `
+
 const MusicList = styled.div `
-  height: 1441px;
   width: 1200px;
-  position: absolute;
   flex-direction: column;
-  border-radius: 10%;
+  align-items: center;
+  justify-content : center;
+  border-radius: 30px;
+  margin-top: 60px;
+  padding: 45px;
   background-color: rgba(255, 255, 255, 0.3);
 `
 const Title = styled.p `
-  position: absolute;
-  font-family: 'Inter';
-  font-style: normal;
   font-weight: bold;
   font-size: 80px;
-  line-height: 30px;
-  float: left;
-  
+  margin-bottom: 15px;
+  width: 800px; /* 적절한 너비 값 설정 */
+  white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+  overflow: hidden; /* 너비를 초과하는 텍스트 감추기 */
+  text-overflow: ellipsis; /* 생략 부분을 ...으로 표시 */
+  z-index: 5;
+  &:hover {
+      animation: ${slideAnimation} 10s linear infinite;
+    }
 `
-const Main = styled.p `
-  position: absolute;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 18px;
-  padding: 5px 0 5px 0; 
-  display: flex;
-  justify-content: flex-start;
-`
+
 const ImgSubTitle = styled.p`
-  position: absolute;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
   font-size: 27px;
-  line-height: 22px;
+  margin-right: 70px;
 `
-const Spotify = styled.img`
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  padding: 10px;
+const Img = styled.img`
+  width: 35px;
+  height: 35px;
+  margin-right: 70px;
 `
-const Heart = styled.img`
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  padding: 10px;
-`
+
 const PlayIcon = styled.img` 
   width: 100px;
   height: 100px;
-  position:absolute;
-  padding: 30px;
 `
 const UpperMusiclist = styled.p`
-  position: absolute;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
   font-size: 24px;
-  line-height: 18px;
-  padding: 5px 0 5px 0;
+  width: 480px;
 `
-const Music = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 0 0 0;
-  padding: 0 0 0 0;
+
+const Hline = styled.div`
   width: 100%;
-  height: 100%;
+  border-bottom: 1px solid #FFFFFF;
+  margin-bottom: 15px;
 `
-const MusicBlock = styled.div`
-  display: flex;
-  flex-direction: row;
-`
-const SongInfo = styled.p `
-  position: absolute;
-  font-family: 'Inter';
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 400; 
-  line-height: 22px;
-`
-const SongName = styled.p`
-  position: absolute;
-  font-family: 'Inter';
-  font-size: 30px;
-  font-style: normal;
-  font-weight: bold; 
-  line-height: 22px;
-`
-const NameInfo = styled.div`
-  height: 63px;
-  width: 164px;
-  display: flex; 
-  flex-direction: column;
-  justify-content: flex-start;
-`
-const Hline = styled.p`
-    border-bottom: thin solid #FFF;
-    position: absolute;
-`
+
 const TrackContainer = styled.div`
-  width: 1097px;
+  width: 100%;
   height: 70px; 
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-contents: center;
+  margin:0 0 20px 0;
 `
+
+const TrackNumber = styled.p`
+  margin-right: 50px;
+`
+
+const TrackCover = styled.img`
+  width: 70px;
+  height: 70px;
+  margin-right: 22px;
+  `
+
+  const TrackMainBlock = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 395px;
+    height: 63px;
+    justify-content: space-between;
+    align-items: start;
+    margin-right: 22px;
+  `
+
+  const TrackTitle = styled.p`
+    font-weight: bold;
+    font-size: 25px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+
+    &:hover {
+      animation: ${slideAnimation} 10s linear infinite;
+    }
+  `
+
+  const TrackArtist = styled.p`
+    font-size: 20px;
+  `
+
+  const TrackAlbum = styled.p`
+    width: 445px;
+    font-size: 20px;
+    margin-right: 10px;
+  `

@@ -4,7 +4,7 @@ import { useEffect, useReducer,Fragment } from "react";
 import {Header, Footer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
 import {searchPlaylistsByTag} from "../utils/spotifyAPI"
-import playicon from "../assets/images/play_icon.png"
+import playicon from "/etc/play_icon.png"
 import back from "../assets/images/back_icon.png"
 import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFunctions";
 import {sites, weathers} from "../utils/data";
@@ -13,9 +13,9 @@ import { fetchGradient } from "../styles/Gradient";
 import "../styles/spinner.css";
 
 
-function PlaylistContainer ({playlist}) {
+function PlaylistContainer ({playlist, weather}) {
   return (
-    <Link to={`home/${playlist}`}>
+    <Link to={`playlist/${playlist.name}`} state={{data: playlist, weather: weather}}>
       <PlayContainer>
         <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
         <PlayDetail>
@@ -122,6 +122,17 @@ const reducer = (state, action) => {
 export default function Home() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const initialStat = {
+    Clear: 0,
+    Clouds: 0,
+    Rain: 0,
+    Snow: 0,
+    Fog: 0,
+    Etc: 0,
+  };
+
+  localStorage.setItem("Preference", JSON.stringify(initialStat));
+
   const handleToggleMenu = () => {
     dispatch({ type: "TOGGLE_MENU" });
   };
@@ -200,6 +211,7 @@ export default function Home() {
               <PlaylistContainer 
                 key={playlist.id}
                 playlist={playlist}
+                weather={state.currentWeatherInfo.weather}
               />
             ))
             ) : (
