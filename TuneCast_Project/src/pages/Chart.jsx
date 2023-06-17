@@ -1,23 +1,31 @@
 import '../styles/App.css'
 import '../styles/index.css'
 import '../styles/Playlist.css'
-import { styled } from 'styled-components';
+import { createGlobalStyle, styled } from 'styled-components';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { fetchColors } from '../styles/gradient.js';
 import { useEffect, useState } from 'react';
 
+import { Header, Footer } from "../components"
+
 function checkIsEmpty(values) {
     return values.every(val => val == 0);
 }
 
-function getPercent(playlists) {
+function getMax(playlists) {
+    const playlist_entries = Object.entries(playlists);
     const playlist_values = Object.values(playlists);
 
     const playlist_sum = playlist_values.reduce((a, b) => a + b, 0);
-    const playlist_percent = playlist_values.map(val => (val / playlist_sum * 100).toFixed(2));
+    const [maxKey, maxValue] = playlist_entries.reduce((acc, val) => (val[1] > acc[1] ? val : acc));
 
-    return playlist_percent;
+    // const max_value = Math.max(...playlist_values);
+    const max_percent = (maxValue / playlist_sum * 100).toFixed(0);
+
+    console.log(max_percent);
+
+    return [maxKey, max_percent];
 }
 
 function getGradient(ctx, chartArea) {
@@ -62,6 +70,7 @@ function ChartView() {
     const [song, setSong] = useState([]);
     const [playlist, setPlaylist] = useState([]);
     const [isEmpty, setisEmpty] = useState([false, false]);
+    const [maxKey, setMaxKey] = useState(["", ""]);
 
     const initialState = {
         "맑음": 0,
@@ -93,10 +102,14 @@ function ChartView() {
 
     useEffect(() => {
         setisEmpty([checkIsEmpty(Object.values(song)), checkIsEmpty(Object.values(playlist))]);
-
+        if (Object.keys(playlist).length > 0) {
+            setMaxKey(getMax(playlist));
+        } else {
+            setMaxKey([]);
+        }
         console.log(isEmpty);
+        console.log(maxKey);
     }, [song, playlist]);
-
 
     const song_options = {
         responsive: true,
@@ -176,47 +189,82 @@ function ChartView() {
         ]
     };
 
-    return (
-        <Container>
-            <MainContainer>
-                {isEmpty[0] ? <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText> :
-                    <ChartContainer>
-                        <Text>이달의 좋아요한 음악</Text>
-                        <Bar data={song_data} options={song_options} />
-                    </ChartContainer>
-                }
-                <Vline />
-                {isEmpty[1] ? <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText>  :
-                    <ChartContainer>
-                        <Text>이달의 좋아요한 플레이리스트</Text>
-                        <ChartText>맑음</ChartText>
-                        <ChartText2>45%</ChartText2>
-                        <Doughnut data={playlist_data} options={playlist_options} />
-                    </ChartContainer>
-                }
-            </MainContainer>
-        </Container>
+    return (<>
+        <Header />
+        <Background>
+            <Container>
+                <MainContainer>
+                    {isEmpty[0] ? <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText> :
+                        <ChartContainer>
+                            <Text>이달의 좋아요한 음악</Text>
+                            <Bar data={song_data} options={song_options} />
+                        </ChartContainer>
+                    }
+                    <Vline />
+                    {isEmpty[1] ? <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText> :
+                        <ChartContainer>
+                            <Text>이달의 좋아요한 플레이리스트</Text>
+                            <VStack>
+                                <ChartText>{maxKey[0]}</ChartText>
+                                <ChartText2>{maxKey[1]}%</ChartText2>
+                                <Doughnut data={playlist_data} options={playlist_options} />
+                            </VStack>
+                        </ChartContainer>
+                    }
+                </MainContainer>
+            </Container>
+        </Background>
+        <Footer />
+    </>
     )
 }
 export default ChartView;
 
-const Container = styled.div`
-    height: 100vh;
+const Background = styled.div`
     width: 100vw;
+    height: 80vh;
+
+    margin: 0;
+    padding: 0;
+
+    position: relative;
+`
+
+
+
+const Container = styled.div`
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-direction: row;
+
+    margin: 120px 0 50px 0;
 `
+
 const MainContainer = styled.div`
     height: 640px;
     width: 1200px;
-    display: flex; 
+    display: flex;
     align-items: center;
+    justify-content: center;
     border-radius: 30px;
     background-color: rgba(255, 255, 255, 0.2);
+
+    margin: 35px 0;
+`
+const VStack = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 400px;
+    height: 450px;
+
+    padding: 0 0 50px 0;
 `
 const Text = styled.p`
+    position: relative;
     width: 100%;
     font-family: 'Inter';
     font-style: normal;
@@ -247,7 +295,7 @@ const ChartContainer = styled.div`
 `
 const ChartText = styled.p`
     position: relative;
-    top: 50%;
+    top: 55%;
 
     font-family: 'Inter';
     font-style: normal;
@@ -256,7 +304,7 @@ const ChartText = styled.p`
 `
 const ChartText2 = styled.p`
     position: relative;
-    top: 55%;
+    top: 58%;
 
     font-family: 'Inter';
     font-style: normal;
