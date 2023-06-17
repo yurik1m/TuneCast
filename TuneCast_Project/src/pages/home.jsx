@@ -130,7 +130,9 @@ export default function Home() {
     Etc: 0,
   };
 
-  localStorage.setItem("Preference", JSON.stringify(initialStat));
+  if (!localStorage.getItem("TuneCast")) {
+    localStorage.setItem("TuneCast", JSON.stringify(initialStat));
+  };
 
   const handleToggleMenu = () => {
     dispatch({ type: "TOGGLE_MENU" });
