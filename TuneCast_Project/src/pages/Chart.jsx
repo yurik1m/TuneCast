@@ -8,6 +8,7 @@ import { fetchColors } from '../styles/gradient.js';
 import { useEffect, useState } from 'react';
 
 import { Header, Footer } from "../components"
+import empty_image from "../assets/images/empty_svg.svg"
 
 function checkIsEmpty(values) {
     return values.every(val => val == 0);
@@ -194,14 +195,24 @@ function ChartView() {
         <Background>
             <Container>
                 <MainContainer>
-                    {isEmpty[0] ? <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText> :
+                    {isEmpty[0] ?
+                        <VStack2>
+                            <img src={empty_image} alt="SVG Image" />
+                            <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText>
+                        </VStack2>
+                        :
                         <ChartContainer>
                             <Text>이달의 좋아요한 음악</Text>
                             <Bar data={song_data} options={song_options} />
                         </ChartContainer>
                     }
                     <Vline />
-                    {isEmpty[1] ? <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText> :
+                    {isEmpty[1] ?
+                        <VStack2>
+                            <img src={empty_image} alt="SVG Image" />
+                            <EmptyText>아직 좋아요한 플레이리스트가 없어요.</EmptyText>
+                        </VStack2>
+                        :
                         <ChartContainer>
                             <Text>이달의 좋아요한 플레이리스트</Text>
                             <VStack>
@@ -229,8 +240,6 @@ const Background = styled.div`
 
     position: relative;
 `
-
-
 
 const Container = styled.div`
     display: flex;
@@ -263,6 +272,15 @@ const VStack = styled.div`
 
     padding: 0 0 50px 0;
 `
+const VStack2 = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 50%;
+    height: 100%;
+`
 const Text = styled.p`
     position: relative;
     width: 100%;
@@ -274,12 +292,12 @@ const Text = styled.p`
 `
 
 const EmptyText = styled.p`
-    width: 50%;
+    width: 100%;
     font-family: 'Inter';
     font-style: normal;
     font-weight: 400;
     font-size: 20px;
-    padding: 0 0 50px 20px;
+    padding: 50px 20px;
     align-self: center;
     text-align: center;
 `
@@ -316,3 +334,11 @@ const Vline = styled.p`
     border-left: 2px solid rgba(255, 255, 255, 0.5);
     height: 70%;
 `
+
+const EmptyImage = styled.div`
+  width: 300px;
+  height: 300px;
+  background-image: ${empty_image};
+  background-size: cover;
+  background-position: center;
+`;
