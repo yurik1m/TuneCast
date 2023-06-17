@@ -83,7 +83,7 @@ function ForcastWeather ({weather})  {
   return (
     <DayContainer>
       <WeatherIcon />
-      <Text>{weather.temp_min}º /{weather.temp_min}º</Text>
+      <Text>{weather.temp_max}º /{weather.temp_min}º</Text>
     </DayContainer>
   )
 }
@@ -160,7 +160,7 @@ export default function Home() {
         console.log(error);
       });
   }, [state.selectedItem]);
- 
+
   useEffect(() => {  //날씨 태그에 따른 플레이리스트 검색
     searchPlaylistsByTag(state.currentWeatherInfo.weather, 4)
       .then((playlists) => {
