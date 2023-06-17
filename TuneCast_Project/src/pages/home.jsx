@@ -4,32 +4,25 @@ import { useEffect, useReducer,Fragment } from "react";
 import {Header, Footer} from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
 import {searchPlaylistsByTag} from "../utils/spotifyAPI"
-<<<<<<< HEAD
 import playicon from "/etc/play_icon.png"
-=======
->>>>>>> 22b76dd85c87ae19dc12553b9c8c7a904587d307
 import back from "../assets/images/back_icon.png"
 import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFunctions";
 import {sites, weathers} from "../utils/data";
 import {Menu, SiteList, Main, PlayContainer, PlayCover, PlayButton, PlayDetail, PlayTitle, ButtonImg, Back, CurrentWeatherInfoContainer, CurrentWeatherContainer, Icon, MainContainer, City, Report, Special, MaxTemp, Temp, MinTemp, CurrentTemp, Text, ForcastContainer, CurrentWeatherIcon,DayContainer, Weather} from "../styles/StyledHome";
-import { fetchGradient } from "../styles/Gradient";
+import {fetchGradient} from "../styles/Gradient";
 import "../styles/spinner.css";
 
 
 function PlaylistContainer ({playlist, weather}) {
   return (
-<<<<<<< HEAD
     <Link to={`playlist/${playlist.name}`} state={{data: playlist, weather: weather}}>
-=======
-    <Link to={`/home/${playlist.name}`}>
->>>>>>> 22b76dd85c87ae19dc12553b9c8c7a904587d307
       <PlayContainer>
         <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
         <PlayDetail>
           <PlayTitle>{playlist.name}</PlayTitle>
           <p>spotify</p>
           <PlayButton>
-            <ButtonImg src="/etc/play_icon.png" alt="play"/>
+            <ButtonImg src={playicon} alt="play"/>
           </PlayButton>
         </PlayDetail>
      </PlayContainer>
@@ -145,7 +138,6 @@ export default function Home() {
 
   const handleSelectItem = (item) => {
     dispatch({ type: "SELECT_ITEM", payload: item.id });
-    console.log(item);
   };
 
 
@@ -240,7 +232,7 @@ export default function Home() {
   )
 } else {
   return (
-    <div class="loadingio-spinner-rolling-ow5spfue44k"><div class="ldio-osnzl6m5ejj">
+    <div className="loadingio-spinner-rolling-ow5spfue44k"><div className="ldio-osnzl6m5ejj">
     <div></div>
     </div></div>
    

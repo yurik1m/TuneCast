@@ -129,12 +129,8 @@ function Playlist() {
 export default Playlist;
 
 const slideAnimation = keyframes`
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
   `;
 
 
@@ -277,9 +273,11 @@ const TrackCover = styled.img`
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
-
+    max-width: 395px;
+    will-change: transform;
     &:hover {
       animation: ${slideAnimation} 10s linear infinite;
+      overflow: visible;
     }
   `
 
