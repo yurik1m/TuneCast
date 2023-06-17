@@ -14,19 +14,24 @@ import "../styles/spinner.css";
 
 
 function PlaylistContainer ({playlist, weather}) {
+  const spotifyPlaylistUrl = `https://open.spotify.com/playlist/${playlist.id}`;
   return (
-    <Link to={`playlist/${playlist.name}`} state={{data: playlist, weather: weather}}>
+   
       <PlayContainer>
         <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
         <PlayDetail>
-          <PlayTitle>{playlist.name}</PlayTitle>
+          <Link to={`playlist/${playlist.name}`} state={{data: playlist, weather: weather}}>
+            <PlayTitle>{playlist.name}</PlayTitle>
+          </Link>
           <p>spotify</p>
-          <PlayButton>
-            <ButtonImg src={playicon} alt="play"/>
-          </PlayButton>
+          <a href={spotifyPlaylistUrl} target="_blank" rel="noreferrer">
+            <PlayButton>
+              <ButtonImg src={playicon} alt="play"/>
+            </PlayButton>
+          </a>
         </PlayDetail>
      </PlayContainer>
-   </Link>
+
 )};
 
 
@@ -164,7 +169,7 @@ export default function Home() {
   }, [state.selectedItem]);
 
   useEffect(() => {  //날씨 태그에 따른 플레이리스트 검색
-    searchPlaylistsByTag(state.currentWeatherInfo.weather, 4)
+    searchPlaylistsByTag(state.currentWeatherInfo.weather)
       .then((playlists) => {
         dispatch({ type: "SET_PLAYLIST", payload: playlists });
       })
@@ -234,9 +239,14 @@ export default function Home() {
   )
 } else {
   return (
-    <div className="loadingio-spinner-rolling-ow5spfue44k"><div className="ldio-osnzl6m5ejj">
-    <div></div>
-    </div></div>
+    <Main>
+      <div className="loadingio-spinner-rolling-ow5spfue44k">
+        <div className="ldio-osnzl6m5ejj">
+          <div>
+          </div>
+       </div>
+      </div>
+    </Main>
    
   )
 }

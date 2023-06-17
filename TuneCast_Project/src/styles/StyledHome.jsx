@@ -92,6 +92,13 @@ export const PlayDetail = styled.div`
 export const PlayTitle = styled.h3`
   font-size: 25px;
   font-weight: 700;
+  width: 100%;
+  height: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  :hover {
+    overflow: visible;
+  }
 `
 
 export const PlayButton = styled.button`
