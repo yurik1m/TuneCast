@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Buffer } from 'buffer';
+import _ from 'lodash';
 
 
 window.Buffer = window.Buffer || Buffer;
@@ -47,7 +48,7 @@ async function getAccessToken() {
 // 
 // ]
 
-export async function searchPlaylistsByTag(tag, limit = 4) {
+export async function searchPlaylistsByTag(tag, limit=50) {
   try {
     const accessToken = await getAccessToken();
     const apiUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(tag)}&type=playlist&limit=${limit}`; 
@@ -61,17 +62,13 @@ export async function searchPlaylistsByTag(tag, limit = 4) {
     });
 
     const playlists = response.data.playlists.items; 
-    const playlistResults = [];
-
-    playlists.forEach((playlist) => {
-      const playlistInfo = {
-        id: playlist.id,
-        name: playlist.name,
-        cover: playlist.images.length > 0 ? playlist.images[0].url : null,
-      };
-      playlistResults.push(playlistInfo);
-    });
-
+    const shuffledPlaylists = _.shuffle(playlists); // 플레이리스트 순서를 랜덤으로 섞음
+    const playlistResults = shuffledPlaylists.slice(0, 4).map((playlist) => ({
+      id: playlist.id,
+      name: playlist.name,
+      cover: playlist.images.length > 0 ? playlist.images[0].url : null,
+    }));
+    console.log(playlistResults);
     return playlistResults; 
   } catch (error) {
     console.error('Error searching playlists by tag:', error);

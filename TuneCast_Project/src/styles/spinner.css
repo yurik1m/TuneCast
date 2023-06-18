@@ -5,12 +5,14 @@
   100% { transform: translate(-50%,-50%) rotate(360deg); }
 }
 .ldio-osnzl6m5ejj div {
-  position: absolute;
   width: 120px;
   height: 120px;
   border: 20px solid #93dbe9;
   border-top-color: transparent;
   border-radius: 50%;
+  position: absolute;
+  top: 40%;
+  left: 40%;
 }
 .ldio-osnzl6m5ejj div {
   animation: ldio-osnzl6m5ejj 1s linear infinite;
@@ -27,6 +29,7 @@
 .ldio-osnzl6m5ejj {
   width: 100%;
   height: 100%;
+  background-color: white;
   position: relative;
   transform: translateZ(0) scale(1);
   backface-visibility: hidden;

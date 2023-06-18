@@ -117,7 +117,7 @@ function Playlist() {
         <Hline />
         <ul>
           {track.map((track, index) => (
-            <TrackBlock track={track} index={index+1} count={count} setCount={setCount}/>
+            <TrackBlock key={index} track={track} index={index+1} count={count} setCount={setCount}/>
           ))}
         </ul>
       </MusicList>

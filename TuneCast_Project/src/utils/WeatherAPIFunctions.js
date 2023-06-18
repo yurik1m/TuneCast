@@ -66,14 +66,44 @@ export async function fetchCurrentWeatherData(city) {
 // 5일 예보의 경우 아래와 같이 불러서 사용
 // fetchForecastData('도시이름').then((data) => console.log(data));
 // data -> [ {temp_max: '최고온도', temp_min: '최저온도', weather: '날씨'}, .. ]
+// ap
 export async function fetchForecastData(city) {
   const fetchData = await fetchForecast(city);
   //TODO: 추후 현재날짜와 시간을 고려하여 필요한 데이터만 추출하도록 변경필요 (시작 데이터가 현재시간이 아님)
-  const filteredData = fetchData.list.filter((item, index) => index % 8 === 0);
-  const forecastData = filteredData.map((item) => ({
-    temp_max: item.main.temp_max,
-    temp_min: item.main.temp_min,
-    weather: item.weather[0].main,
+  const dailyTemperatures = {};
+  fetchData.list.forEach((item) => {
+    const date = item.dt_txt.split(" ")[0]; // 날짜 부분만 추출
+
+    if (!dailyTemperatures[date]) {
+      dailyTemperatures[date] = {
+        temp_max: item.main.temp_max,
+        temp_min: item.main.temp_min,
+        weather: item.weather[0].main,
+      };
+    } else {
+      if (item.main.temp_max > dailyTemperatures[date].temp_max) {
+        dailyTemperatures[date].temp_max = item.main.temp_max;
+      }
+
+      if (item.main.temp_min < dailyTemperatures[date].temp_min) {
+        dailyTemperatures[date].temp_min = item.main.temp_min;
+      }
+    }
+  });
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, '0');
+  const day = today.getDate().toString().padStart(2, '0');
+  const todayDate = `${year}-${month}-${day}`;
+
+  const forecastData = Object.entries(dailyTemperatures)
+  .filter(([date, temperatures]) => date !== todayDate)
+  .map(([date, temperatures]) => ({
+    date,
+    temp_max: temperatures.temp_max,
+    temp_min: temperatures.temp_min,
+    weather: temperatures.weather, // 날씨는 첫 번째 아이템으로 고정
   }));
+
   return forecastData;
 }
