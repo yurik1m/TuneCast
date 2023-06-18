@@ -2,14 +2,24 @@ import styled from "styled-components";
 import '../styles/index.css';
 import '../styles/TuneCastPage.css';
 import jimin from '../assets/images/jimin_mimoji.png';
-import circleBackground from '../assets/images/circle_background.png';
+import yuri from '../assets/images/yuri.png';
+import yc from '../assets/images/yc.png';
 import chart_icon from '../assets/images/chart_icon.png';
 import spotify_icon from '../assets/images/spotify.png';
 import weather_icon from '../assets/images/weather_icon.png';
 import notion from '../assets/images/notion.png';
 import github from '../assets/images/github.png';
 
+import { useState } from "react";
+
+import { Header, Footer } from "../components"
+import { Icon } from "semantic-ui-react";
+import { Main } from "../styles/StyledHome";
+
 function MemberPage() {
+
+  const [isHovered, setIsHovered] = useState([false, false, false]);
+  const [isShowToolTip, setIsShowToolTip] = useState(false);
 
   const members = [
     {
@@ -17,251 +27,317 @@ function MemberPage() {
       major: "건축공학전공",
       id: "2020112423",
       github: "yurik1m",
-      image: null,
+      githubURL: "https://github.com/yurik1m",
+      image: yuri,
     },
     {
       name: "김영철",
       major: "경영학과",
       id: "2019111418",
       github: "kyc7604",
-      image: null,
+      githubURL: "https://github.com/kyc7604",
+      image: yc,
     },
     {
       name: "전지민",
       major: "산업시스템공학과",
       id: "2019113625",
       github: "JMM00",
+      githubURL: "https://github.com/JMM00",
       image: jimin,
     },
   ];
 
-  return (
-    <Container>
-      <BlockBackground>
-        <CircleBackground>
-          <ChartIcon src={chart_icon} />
-          <SpotifyIcon src={spotify_icon} />
-          <WeatherIcon src={weather_icon} />
-
-          <ImgTitle>Tune Cast</ImgTitle>
-          <ImgSubTitle style={{top: 160, left: 80 }}>WeatherAPI</ImgSubTitle>
-          <ImgSubTitle style={{top: 160, right: 110 }}>Spotify</ImgSubTitle>
-          <ImgSubTitle style={{bottom: 30, left: 230 }}>Chart.js</ImgSubTitle>
-        </CircleBackground>
-        <SubBlockBackground>
+  return (<>
+    <Header />
+    <Background>
+      <MainBlock>
+        <IconContainer>
+          <IconStackLeft onClick={() => handleClick('https://openweathermap.org/')} onMouseEnter={() => setIsHovered([true, false, false])} onMouseLeave={() => setIsHovered([false, false, false])}>
+            <Image className="blink" src={weather_icon} alt="weatherAPI" isHovered={isHovered[0]}></Image>
+            <ImageTitle>weatherAPI</ImageTitle>
+          </IconStackLeft>
+          <IconStackRight onClick={() => handleClick('https://open.spotify.com/')} onMouseEnter={() => setIsHovered([false, true, false])} onMouseLeave={() => setIsHovered([false, false, false])}>
+            <Image className="blink small" src={spotify_icon} alt="spotify" isHovered={isHovered[1]}></Image>
+            <ImageTitle>spotify</ImageTitle>
+          </IconStackRight>
+          <IconStackBottom onClick={() => handleClick('https://www.chartjs.org/')} onMouseEnter={() => setIsHovered([false, false, true])} onMouseLeave={() => setIsHovered([false, false, false])}>
+            <Image className="blink medium" src={chart_icon} alt="chart.js" isHovered={isHovered[2]}></Image>
+            <ImageTitle>Chart.js</ImageTitle>
+          </IconStackBottom>
+          <Title className="primary">TuneCast</Title>
+        </IconContainer>
+        <Vline />
+        <TextVStack>
           <Title>{`광역시 기준 날씨 정보를 제공하고 \n날씨에 맞는 플레이리스트를 추천해주는 서비스`}</Title>
-          <Header>TuneCast</Header>
-          <Body>날씨와 어울리는 플레이리스트</Body>
-          <Body>간단하지만 필요한 날씨정보</Body>
-          <Body>내가 누른 좋아요 기반 간단한 통계</Body>
+          <HeaderFont>TuneCast</HeaderFont>
+          <Body className={isHovered[0] ? "primary" : ""}>간단하지만 필요한 날씨정보</Body>
+          <Body className={isHovered[1] ? "primary" : ""}>날씨와 어울리는 플레이리스트</Body>
+          <Body className={isHovered[2] ? "primary" : ""}>내가 누른 좋아요 기반 간단한 통계</Body>
 
           <Caption>자세히 알아보기...</Caption>
-          <IconContainer>
-            <Icon src={notion}/>
-            <Icon src={github}/>
-          </IconContainer>
-        </SubBlockBackground>
-      </BlockBackground>
-      <BlockBackground>
-        <MemberContainer >
-          {members.map((member, index) => (
-            <div key={index}>
-              <MemberBlock>
-                <Profile>
-                  {member.image && (
-                    <img src={member.image} alt={member.name} width="80%" height="80%" />
-                  )}
-                </Profile>
-                <MemberInfo>
-                  <Title>이름: {member.name}</Title>
-                  <Title>학과: {member.major}</Title>
-                  <Title>학번: {member.id}</Title>
-                  <Title> <Icon src={github} style={{paddingLeft: 10}}/>: {member.github}</Title>
-                </MemberInfo>
-              </MemberBlock>
-
-              {index !== members.length - 1 && <hr />}
-            </div>
-          ))}
-        </MemberContainer>
-      </BlockBackground>
-    </Container>
+          <Tooltip>
+            <Image 
+            className="icon2" 
+            src={github} 
+            onClick={() => handleClick('https://github.com/yurik1m/TuneCast')} 
+            onMouseEnter={() => setIsShowToolTip(true)}
+            onMouseLeave={() => setIsShowToolTip(false)}/>
+            <TooltipText style={{ visibility: isShowToolTip ? 'visible' : 'hidden' }}> TuneCast 깃허브로 이동하기</TooltipText>
+          </Tooltip>
+        </TextVStack>
+      </MainBlock>
+      <MainBlock>
+        {members.map((member, index) => (
+          <div key={index}>
+            <ProfileVStack>
+              <ProfileImage src={member.image} alt={member.name} />
+              <ProfileTextVStack>
+                <ProfileTitle>이름: {member.name}</ProfileTitle>
+                <ProfileTitle>학과: {member.major}</ProfileTitle>
+                <ProfileTitle>학번: {member.id}</ProfileTitle>
+                <ProfileTitle> <Image className="icon" src={github} style={{ paddingLeft: 10 }} />: <a href={member.githubURL} target="_blank">{member.github}</a></ProfileTitle>
+              </ProfileTextVStack>
+            </ProfileVStack>
+            {index !== members.length - 1 && <hr />}
+          </div>
+        ))}
+      </MainBlock>
+    </Background>
+    <Footer />
+  </>
   )
 }
 export default MemberPage;
 
+const handleClick = (url) => {
+  window.open(url, '_blank');
+}
 
-const Container = styled.div`
-  height: 100%;
+
+const Background = styled.div`
   width: 100vw;
+  height: 100%;
+
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: space-between;
   flex-direction: column;
+
+  padding: 120px 0 35px 0;
 `
-const BlockBackground = styled.div`
-  background: rgba(255, 255, 255, 0.3);
+
+const MainBlock = styled.div`
+  width: 1200px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
+  background-color: rgba(255, 255, 255, 0.3);
   border-radius: 30px;
 
-  margin: 35px 120px;
-
-  width: 80vw;
-  height: 640px;
-  display: flex;
-  justify-content: center; 
-  align-items: center;
+  margin: 35px 0 0 0 ;
+  padding: 50px 20px;
 `
-
-const MemberContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  margin: 0 0 0 0;
-  padding: 0 0 0 0;
-
-  width: 100%;
-  height: 100%;
-`
-const MemberBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`
-
-const MemberInfo = styled.div`
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 24px;
-
-  margin: 60px 0 0 0;
-`
-const Profile = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-`
-
-const SubBlockBackground = styled.div`
-  width: 40%;
-  height: 100%;
+const VStack = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+`
+const TextVStack = styled(VStack)`
+  padding: 0 30px 0 0;
+  margin: 0 20px 0 0;
+`
+const ProfileTextVStack = styled(VStack)`
   align-items: left;
-  margin: 0 90px 0 90px; 
 `
-
-const IconContainer = styled.div`
-  display: flex;
-  justify-content: left;
+const ProfileVStack = styled(TextVStack)`
+  width: 320px;
   align-items: center;
-  margin: 0 0 0 0;
-  padding: 0 0 0 0;
+  padding: 20px 20px;
 `
 
-// 이미지 관련 css
-const CircleBackground = styled.div`
-  background-image: url(${circleBackground});
-  background-size: cover;
-  width: 552px;
-  height: 442.61px;
+const IconStack = styled(VStack)`
+  align-items: center;
+  width: 250px;
+  height: 250px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+
+  &:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+`
+const IconStackLeft = styled(IconStack)`
+  position: absolute;
+
+  padding: 20px;
+  left: 5%;
+  top: 10%;
+`
+const IconStackRight = styled(IconStack)`
+  position: absolute;
+  right: 5%;
+  top: 10%;
+`
+const IconStackBottom = styled(IconStack)`
+  position: absolute;
+  left: 25%;
+  bottom: 5%;
+`
+
+
+const Image = styled.img`
+  width: 50%;
+  height: 50%;
+  margin: 0 20px;
+
+  &.blink {
+    animation: ${props => props.isHovered ? 'blink 2s infinite' : 'none'};
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+  }
+
+  &.small {
+    padding: 30px;
+  }
+
+  &.medium {
+    padding: 15px;
+  }
+
+  &.icon {
+    height: 20px;
+    width: 30px;
+    margin: 0 0 0 5px;
+  }
+
+  &.icon2 {
+    width: 20px;
+    margin: 0px;
+
+    &:hover {
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+  }
+`
+const ProfileImage = styled(Image)`
+  width: 220px;
+  height: 220px;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%; 
+
+  margin: 0 0 30px 0;
+`
+const IconContainer = styled.div`
+  width: 500px;
+  height: 500px;
+
   position: relative;
-  margin: 0 0 0 86px;
-`
-const ChartIcon = styled.img`
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  bottom: 30px;
-  left: calc(50% - 70px);
-  padding: 20px;
-`
-const SpotifyIcon = styled.img`
-  width: 80px;
-  height: 80px;
-  position: absolute;
-  top: 10px;
-  right: 40px;
-  // background: red;
-  padding: 50px;
-`
-const WeatherIcon = styled.img`
-  width: 120px;
-  height: 120px;
-  position: absolute;
-  top: 10px;
-  left: 40px;
+
   padding: 20px;
 `
 
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-  margin: 20px 5px 0 0;
-  padding: 0 0 0 0;
+const Vline = styled.p`
+    border-left: 2px solid rgba(255, 255, 255, 0.5);
+    height: 70%;
 `
 
-// 텍스트 관련 css
-const Title = styled.p`
+const Font = styled.p`
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
+`
+const Title = styled(Font)`
+  display: inline-block;
   font-size: 20px;
   line-height: 24px;
   white-space: pre-line;
+  
+  &.primary {
+    font-size: 30px;
+    top: 50%;
+    position: relative;
+    justify-self: start;
+    background: linear-gradient(
+      to top,
+      rgba(243, 114, 44, 0.5) 50%,
+      transparent 50%
+    );
+  }
 `
-const Header = styled.p`
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
+const ImageTitle = styled(Font)`
+  font-size: 15px;
+  line-height: auto;
+  white-space: pre-line;
+`
+const ProfileTitle = styled(Title)`
+  padding: 0 40px;
+`
+const HeaderFont = styled(Font)`
   font-size: 40px;
   line-height: 48px;
 
   margin: 20px 0;
 `
-const Body = styled.p`
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
+const Body = styled(Font)`
+  display: inline-block;
   font-size: 15px;
-  line-height: 18px;
+  line-height: 15px;
   padding: 5px 0 5px 0;
+  align-self: flex-start;
+
+  &.primary {
+    background: linear-gradient(
+      to top,
+      rgba(255, 255, 0, 0.5) 50%,
+      transparent 50%
+    );
+    transition: top 0.2s;
+  }
 `
-const Caption = styled.p`
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
+const Caption = styled(Font)`
   font-size: 10px;
   line-height: 12px;
 
   margin: 79px 0 13px 0;
 `
 
-const ImgTitle = styled.p`
-  position: absolute;
-  left: calc(50% - 80px);
-  top: calc(50% - 30px);
-
-  font-family: 'Jost';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 40px;
-  line-height: 58px;
+const Tooltip = styled. p`
+  position: relative;
+  display: flex;
+  place-content: left;
 `
-
-const ImgSubTitle = styled.p`
+const TooltipText = styled.span`
+  visibility: hidden;
+  width: 220px;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.8);
+  text-align: center;
+  padding: 10px;
+  border-radius: 6px;
   position: absolute;
-  font-family: 'Jost';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 15px;
-  line-height: 22px;
+  z-index: 1;
+  top: -10px;
+  left: 25%;
+  margin-left: -60px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: -4px;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent rgba(255, 255, 255, 0.5) transparent transparent;
+  }
 `
