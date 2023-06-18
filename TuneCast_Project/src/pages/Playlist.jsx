@@ -71,6 +71,7 @@ function Playlist() {
   const [count, setCount] = useState([0,0]); //선호도
   
   const tuneCast_data = JSON.parse(localStorage.getItem("TuneCast"));
+  console.log(tuneCast_data);
   const isMounted = useRef(false);
 
   //count를 로컬스토리지 값으로 초기화
