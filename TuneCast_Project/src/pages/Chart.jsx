@@ -5,7 +5,7 @@ import { createGlobalStyle, styled } from 'styled-components';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { fetchColors } from '../styles/gradient.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import { Header, Footer } from "../components"
 import empty_image from "../assets/images/empty_svg.svg"
@@ -21,23 +21,20 @@ function getMax(playlists) {
     const playlist_sum = playlist_values.reduce((a, b) => a + b, 0);
     const [maxKey, maxValue] = playlist_entries.reduce((acc, val) => (val[1] > acc[1] ? val : acc));
 
-    // const max_value = Math.max(...playlist_values);
     const max_percent = (maxValue / playlist_sum * 100).toFixed(0);
-
-    console.log(max_percent);
 
     return [maxKey, max_percent];
 }
 
 function getGradient(ctx, chartArea) {
 
-    let width, height, gradient1, gradient2, gradient3, gradient4, gradient5;
+    let width, height, gradient1, gradient2, gradient3, gradient4, gradient5, gradient6;
 
     const chartWidth = chartArea.right - chartArea.left;
     const chartHeight = chartArea.bottom - chartArea.top;
 
     const colors = fetchColors();
-    const [clear, clouds, fog, rain, snow] = colors;
+    const [clear, clouds, fog, rain, snow, etc] = colors;
 
     if (!gradient1 || width !== chartWidth || height !== chartHeight) {
         width = chartWidth;
@@ -61,56 +58,75 @@ function getGradient(ctx, chartArea) {
         gradient5 = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
         gradient5.addColorStop(0, snow[0]);
         gradient5.addColorStop(1, snow[1]);
+
+        gradient6 = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+        gradient6.addColorStop(0, etc[0]);
+        gradient6.addColorStop(1, etc[1]);
     }
 
-    return [gradient1, gradient2, gradient3, gradient4, gradient5];
+    return [gradient1, gradient2, gradient3, gradient4, gradient5, gradient6];
+}
+
+function reducer(state, action) {
+    switch (action.type) {
+        case 'SET_DATA':
+            return {
+                ...state,
+                data: action.value
+            }
+        case 'SET_SONG':
+            return {
+                ...state,
+                song: action.value
+            }
+        case 'SET_PLAYLIST':
+            return {
+                ...state,
+                playlist: action.value
+            }
+        case 'SET_MAXKEY':
+            return {
+                ...state,
+                maxKey: action.value
+            }
+        case 'SET_ISEMPTY':
+            return {
+                ...state,
+                isEmpty: action.value
+            }
+        default:
+            return {}
+    }
 }
 
 function ChartView() {
 
-    const [song, setSong] = useState([]);
-    const [playlist, setPlaylist] = useState([]);
-    const [isEmpty, setisEmpty] = useState([false, false]);
-    const [maxKey, setMaxKey] = useState(["", ""]);
-
     const initialState = {
-        "맑음": 0,
-        "구름": 0,
-        "안개": 0,
-        "비": 0,
-        "눈": 0
+        data: {
+            song: [],
+            playlist: [],
+        },
+        maxKey: ["", ""],
+        isEmpty: [false, false]
     };
 
-    if (localStorage.getItem("song") === null) {
-        localStorage.setItem("song", JSON.stringify(initialState));
-    }
-    if (localStorage.getItem("playlist") === null) {
-        localStorage.setItem("playlist", JSON.stringify(initialState));
-    }
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
-        const song_raw = localStorage.getItem("song");
-        const song_dataset = song_raw ? JSON.parse(song_raw) : {};
+        const tuneCast_raw = localStorage.getItem("TuneCast");
+        const tuneCast_dataset = tuneCast_raw ? JSON.parse(tuneCast_raw) : {};
 
-        const playlist_raw = localStorage.getItem("playlist");
-        const playlist_dataset = playlist_raw ? JSON.parse(playlist_raw) : {};
-
-        setSong(song_dataset);
-        setPlaylist(playlist_dataset);
-
-        console.log(song_dataset);
+        dispatch({ type: 'SET_DATA', value: tuneCast_dataset });
     }, []);
 
     useEffect(() => {
-        setisEmpty([checkIsEmpty(Object.values(song)), checkIsEmpty(Object.values(playlist))]);
-        if (Object.keys(playlist).length > 0) {
-            setMaxKey(getMax(playlist));
+        dispatch({ type: 'SET_ISEMPTY', value: [checkIsEmpty(Object.values(state.data.song)), checkIsEmpty(Object.values(state.data.playlist))] });
+        if (Object.keys(state.data.playlist).length > 0) {
+            dispatch({ type: 'SET_MAXKEY', value: getMax(state.data.playlist) })
         } else {
-            setMaxKey([]);
+            dispatch({ type: 'SET_MAXKEY', value: ["", ""] })
         }
-        console.log(isEmpty);
-        console.log(maxKey);
-    }, [song, playlist]);
+    }, [state.data]);
 
     const song_options = {
         responsive: true,
@@ -145,14 +161,12 @@ function ChartView() {
         }
     };
 
-    const labels = ['맑음', '구름', '안개', '비', '눈']
-
     const song_data = {
-        labels: labels,
+        labels: Object.keys(state.data.song),
         datasets: [
             {
                 label: '이달의 좋아요한 음악',
-                data: Object.values(song),
+                data: Object.values(state.data.song),
                 borderColor: 'rgba(255, 255, 255, 0.5)',
                 backgroundColor: function (context) {
                     const chart = context.chart;
@@ -169,11 +183,11 @@ function ChartView() {
     };
 
     const playlist_data = {
-        labels: labels,
+        labels: Object.keys(state.data.playlist),
         datasets: [
             {
                 label: '이달의 좋아요한 플레이리스트',
-                data: Object.values(playlist),
+                data: Object.values(state.data.playlist),
                 borderColor: 'rgba(0, 0, 0, 0.1)',
                 borderWidth: 0.5,
                 backgroundColor: function (context) {
@@ -181,7 +195,6 @@ function ChartView() {
                     const { ctx, chartArea } = chart;
 
                     if (!chartArea) {
-                        // This case happens on initial chart load
                         return;
                     }
                     return getGradient(ctx, chartArea);
@@ -195,7 +208,7 @@ function ChartView() {
         <Background>
             <Container>
                 <MainContainer>
-                    {isEmpty[0] ?
+                    {state.isEmpty[0] ?
                         <VStack2>
                             <img src={empty_image} alt="SVG Image" />
                             <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText>
@@ -207,7 +220,7 @@ function ChartView() {
                         </ChartContainer>
                     }
                     <Vline />
-                    {isEmpty[1] ?
+                    {state.isEmpty[1] ?
                         <VStack2>
                             <img src={empty_image} alt="SVG Image" />
                             <EmptyText>아직 좋아요한 플레이리스트가 없어요.</EmptyText>
@@ -216,8 +229,8 @@ function ChartView() {
                         <ChartContainer>
                             <Text>이달의 좋아요한 플레이리스트</Text>
                             <VStack>
-                                <ChartText>{maxKey[0]}</ChartText>
-                                <ChartText2>{maxKey[1]}%</ChartText2>
+                                <ChartText>{state.maxKey[0]}</ChartText>
+                                <ChartText2>{state.maxKey[1]}%</ChartText2>
                                 <Doughnut data={playlist_data} options={playlist_options} />
                             </VStack>
                         </ChartContainer>
@@ -257,7 +270,7 @@ const MainContainer = styled.div`
     align-items: center;
     justify-content: center;
     border-radius: 30px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.5);
 
     margin: 35px 0;
 `
@@ -313,7 +326,7 @@ const ChartContainer = styled.div`
 `
 const ChartText = styled.p`
     position: relative;
-    top: 55%;
+    top: 50%;
 
     font-family: 'Inter';
     font-style: normal;
@@ -322,7 +335,7 @@ const ChartText = styled.p`
 `
 const ChartText2 = styled.p`
     position: relative;
-    top: 58%;
+    top: 55%;
 
     font-family: 'Inter';
     font-style: normal;
@@ -334,11 +347,3 @@ const Vline = styled.p`
     border-left: 2px solid rgba(255, 255, 255, 0.5);
     height: 70%;
 `
-
-const EmptyImage = styled.div`
-  width: 300px;
-  height: 300px;
-  background-image: ${empty_image};
-  background-size: cover;
-  background-position: center;
-`;
