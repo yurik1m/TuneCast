@@ -77,14 +77,6 @@ function ChartView() {
     const [isEmpty, setisEmpty] = useState([false, false]);
     const [maxKey, setMaxKey] = useState(["", ""]);
 
-    const initialState = {
-        "맑음": 0,
-        "구름": 0,
-        "안개": 0,
-        "비": 0,
-        "눈": 0
-    };
-
     useEffect(() => {
         const tuneCast_raw = localStorage.getItem("TuneCast");
         const tuneCast_dataset = tuneCast_raw ? JSON.parse(tuneCast_raw) : {};
@@ -136,8 +128,6 @@ function ChartView() {
             }
         }
     };
-
-    const labels = ['맑음', '구름', '안개', '비', '눈', 'etc']
 
     const song_data = {
         labels: Object.keys(song),
@@ -326,11 +316,3 @@ const Vline = styled.p`
     border-left: 2px solid rgba(255, 255, 255, 0.5);
     height: 70%;
 `
-
-const EmptyImage = styled.div`
-  width: 300px;
-  height: 300px;
-  background-image: ${empty_image};
-  background-size: cover;
-  background-position: center;
-`;
