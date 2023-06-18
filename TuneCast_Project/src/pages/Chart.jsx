@@ -5,7 +5,7 @@ import { createGlobalStyle, styled } from 'styled-components';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { fetchColors } from '../styles/gradient.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import { Header, Footer } from "../components"
 import empty_image from "../assets/images/empty_svg.svg"
@@ -21,10 +21,7 @@ function getMax(playlists) {
     const playlist_sum = playlist_values.reduce((a, b) => a + b, 0);
     const [maxKey, maxValue] = playlist_entries.reduce((acc, val) => (val[1] > acc[1] ? val : acc));
 
-    // const max_value = Math.max(...playlist_values);
     const max_percent = (maxValue / playlist_sum * 100).toFixed(0);
-
-    console.log(max_percent);
 
     return [maxKey, max_percent];
 }
@@ -70,31 +67,66 @@ function getGradient(ctx, chartArea) {
     return [gradient1, gradient2, gradient3, gradient4, gradient5, gradient6];
 }
 
+function reducer(state, action) {
+    switch (action.type) {
+        case 'SET_DATA':
+            return {
+                ...state,
+                data: action.value
+            }
+        case 'SET_SONG':
+            return {
+                ...state,
+                song: action.value
+            }
+        case 'SET_PLAYLIST':
+            return {
+                ...state,
+                playlist: action.value
+            }
+        case 'SET_MAXKEY':
+            return {
+                ...state,
+                maxKey: action.value
+            }
+        case 'SET_ISEMPTY':
+            return {
+                ...state,
+                isEmpty: action.value
+            }
+        default:
+            return {}
+    }
+}
+
 function ChartView() {
 
-    const [song, setSong] = useState([]);
-    const [playlist, setPlaylist] = useState([]);
-    const [isEmpty, setisEmpty] = useState([false, false]);
-    const [maxKey, setMaxKey] = useState(["", ""]);
+    const initialState = {
+        data: {
+            song: [],
+            playlist: [],
+        },
+        maxKey: ["", ""],
+        isEmpty: [false, false]
+    };
+
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
         const tuneCast_raw = localStorage.getItem("TuneCast");
         const tuneCast_dataset = tuneCast_raw ? JSON.parse(tuneCast_raw) : {};
 
-        setSong(tuneCast_dataset["song"]);
-        setPlaylist(tuneCast_dataset["playlist"]);
+        dispatch({ type: 'SET_DATA', value: tuneCast_dataset });
     }, []);
 
     useEffect(() => {
-        setisEmpty([checkIsEmpty(Object.values(song)), checkIsEmpty(Object.values(playlist))]);
-        if (Object.keys(playlist).length > 0) {
-            setMaxKey(getMax(playlist));
+        dispatch({ type: 'SET_ISEMPTY', value: [checkIsEmpty(Object.values(state.data.song)), checkIsEmpty(Object.values(state.data.playlist))] });
+        if (Object.keys(state.data.playlist).length > 0) {
+            dispatch({ type: 'SET_MAXKEY', value: getMax(state.data.playlist) })
         } else {
-            setMaxKey([]);
+            dispatch({ type: 'SET_MAXKEY', value: ["", ""] })
         }
-        console.log(isEmpty);
-        console.log(maxKey);
-    }, [song, playlist]);
+    }, [state.data]);
 
     const song_options = {
         responsive: true,
@@ -130,11 +162,11 @@ function ChartView() {
     };
 
     const song_data = {
-        labels: Object.keys(song),
+        labels: Object.keys(state.data.song),
         datasets: [
             {
                 label: '이달의 좋아요한 음악',
-                data: Object.values(song),
+                data: Object.values(state.data.song),
                 borderColor: 'rgba(255, 255, 255, 0.5)',
                 backgroundColor: function (context) {
                     const chart = context.chart;
@@ -151,11 +183,11 @@ function ChartView() {
     };
 
     const playlist_data = {
-        labels: Object.keys(playlist),
+        labels: Object.keys(state.data.playlist),
         datasets: [
             {
                 label: '이달의 좋아요한 플레이리스트',
-                data: Object.values(playlist),
+                data: Object.values(state.data.playlist),
                 borderColor: 'rgba(0, 0, 0, 0.1)',
                 borderWidth: 0.5,
                 backgroundColor: function (context) {
@@ -163,7 +195,6 @@ function ChartView() {
                     const { ctx, chartArea } = chart;
 
                     if (!chartArea) {
-                        // This case happens on initial chart load
                         return;
                     }
                     return getGradient(ctx, chartArea);
@@ -177,7 +208,7 @@ function ChartView() {
         <Background>
             <Container>
                 <MainContainer>
-                    {isEmpty[0] ?
+                    {state.isEmpty[0] ?
                         <VStack2>
                             <img src={empty_image} alt="SVG Image" />
                             <EmptyText>아직 좋아요한 음악이 없어요.</EmptyText>
@@ -189,7 +220,7 @@ function ChartView() {
                         </ChartContainer>
                     }
                     <Vline />
-                    {isEmpty[1] ?
+                    {state.isEmpty[1] ?
                         <VStack2>
                             <img src={empty_image} alt="SVG Image" />
                             <EmptyText>아직 좋아요한 플레이리스트가 없어요.</EmptyText>
@@ -198,8 +229,8 @@ function ChartView() {
                         <ChartContainer>
                             <Text>이달의 좋아요한 플레이리스트</Text>
                             <VStack>
-                                <ChartText>{maxKey[0]}</ChartText>
-                                <ChartText2>{maxKey[1]}%</ChartText2>
+                                <ChartText>{state.maxKey[0]}</ChartText>
+                                <ChartText2>{state.maxKey[1]}%</ChartText2>
                                 <Doughnut data={playlist_data} options={playlist_options} />
                             </VStack>
                         </ChartContainer>
