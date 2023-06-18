@@ -6,12 +6,12 @@ import ListBackground from '../assets/images/listbackground.png';
 import { styled, keyframes} from 'styled-components';
 import {Header, Footer} from '../components';
 import Heart from "react-animated-heart";
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment, useRef } from "react";
 import { useLocation } from 'react-router-dom';
 import { getPlaylistTracks } from '../utils/spotifyAPI';
 
 
- function TrackBlock ({track, index, count, setCount}) {
+ function TrackBlock ({track, index, setCount}) {
   const [isClick, setIsClick] = useState(false);
    return (
     <TrackContainer>
@@ -25,9 +25,9 @@ import { getPlaylistTracks } from '../utils/spotifyAPI';
       <Heart isClick={isClick} onClick={() =>{
             setIsClick(!isClick);
             if(isClick){
-              setCount(count-1);
+              setCount(prevCount => [prevCount[0] - 1, prevCount[1]]);
             } else {
-              setCount(count+1);
+              setCount(prevCount => [prevCount[0] + 1, prevCount[1]]);
             };
       }}
       />
@@ -35,7 +35,7 @@ import { getPlaylistTracks } from '../utils/spotifyAPI';
    )
  }
 
- const PlaylistCover = ({playlist, count, setCount}) => {
+ const PlaylistCover = ({playlist, setCount}) => {
   const [isClick, setIsClick] = useState(false);
   const cover = playlist.cover;
   return (
@@ -49,9 +49,9 @@ import { getPlaylistTracks } from '../utils/spotifyAPI';
           <Heart isClick={isClick} onClick={() =>{
             setIsClick(!isClick);
             if(isClick){
-              setCount(count-1);
+              setCount(prevCount => [prevCount[0], prevCount[1]-1]);
             } else {
-              setCount(count+1);
+              setCount(prevCount => [prevCount[0], prevCount[1]+1]);
             };
       }} />
         </Icon>
@@ -68,26 +68,54 @@ function Playlist() {
   let weather = location.state.weather;
 
   const [track,setTrack] = useState([]); //플레이리스트 트랙
-  const [count, setCount] = useState(0); //선호도
+  const [count, setCount] = useState([0,0]); //선호도
   
-  const preference = JSON.parse(localStorage.getItem("Preference"));
-  
-  //로컬스토리지에 저장
+  const tuneCast_data = JSON.parse(localStorage.getItem("TuneCast"));
+  const isMounted = useRef(false);
+
+  //count를 로컬스토리지 값으로 초기화
   useEffect(() => {
     if(weather === "Clear") {
-      preference.Clear = count;
+      setCount([tuneCast_data.song.맑음, tuneCast_data.playlist.맑음]);
     }else if(weather === "Clouds") {
-      preference.Clouds = count;
+      setCount([tuneCast_data.song.흐림, tuneCast_data.playlist.흐림]);
     }else if(weather === "Rain") {
-      preference.Rain = count;
+      setCount([tuneCast_data.song.비, tuneCast_data.playlist.비]);
     }else if(weather === "Snow") {
-      preference.Snow = count;
+      setCount([tuneCast_data.song.눈, tuneCast_data.playlist.눈]);
     }else if(weather === "Fog") {
-      preference.Fog = count;
+      setCount([tuneCast_data.song.안개, tuneCast_data.playlist.안개]);
     }else {
-      preference.Etc = count;
+      setCount([tuneCast_data.song.기타, tuneCast_data.playlist.기타]);
     };
-    localStorage.setItem("Preference", JSON.stringify(preference));
+  }, []);
+
+  //count가 바뀔때마다 로컬스토리지 값도 바꿔줌
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    if(weather === "Clear") {
+      tuneCast_data.song.맑음 = count[0];
+      tuneCast_data.playlist.맑음 = count[1];
+    }else if(weather === "Clouds") {
+      tuneCast_data.song.흐림 = count[0];
+      tuneCast_data.playlist.흐림 = count[1];
+    }else if(weather === "Rain") {
+      tuneCast_data.song.비 = count[0];
+      tuneCast_data.playlist.비 = count[1];
+    }else if(weather === "Snow") {
+      tuneCast_data.song.눈 = count[0];
+      tuneCast_data.playlist.눈 = count[1];
+    }else if(weather === "Fog") {
+      tuneCast_data.song.안개 = count[0];
+      tuneCast_data.playlist.안개 = count[1];
+    }else {
+      tuneCast_data.song.기타 = count[0];
+      tuneCast_data.playlist.기타 = count[1];
+    };
+    localStorage.setItem("TuneCast", JSON.stringify(tuneCast_data));
   }, [count]);
 
   // // 플레이리스트 받기

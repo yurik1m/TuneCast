@@ -34,7 +34,7 @@ export function fetchColors() {
   const fog = ["#B7B7B7", "#A8CAC8"];
   const rain = ["#4E4376", "#2B5876"];
   const snow = ["#F3E7E9", "#DAD4EC"];
-  
+  const etc= ["#a8edea", "#fed6e3"];
 
-  return [clear, clouds, fog, rain, snow];
+  return [clear, clouds, fog, rain, snow, etc];
 }
