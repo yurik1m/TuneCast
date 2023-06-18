@@ -31,13 +31,13 @@ function getMax(playlists) {
 
 function getGradient(ctx, chartArea) {
 
-    let width, height, gradient1, gradient2, gradient3, gradient4, gradient5;
+    let width, height, gradient1, gradient2, gradient3, gradient4, gradient5, gradient6;
 
     const chartWidth = chartArea.right - chartArea.left;
     const chartHeight = chartArea.bottom - chartArea.top;
 
     const colors = fetchColors();
-    const [clear, clouds, fog, rain, snow] = colors;
+    const [clear, clouds, fog, rain, snow, etc] = colors;
 
     if (!gradient1 || width !== chartWidth || height !== chartHeight) {
         width = chartWidth;
@@ -61,9 +61,13 @@ function getGradient(ctx, chartArea) {
         gradient5 = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
         gradient5.addColorStop(0, snow[0]);
         gradient5.addColorStop(1, snow[1]);
+
+        gradient6 = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+        gradient6.addColorStop(0, etc[0]);
+        gradient6.addColorStop(1, etc[1]);
     }
 
-    return [gradient1, gradient2, gradient3, gradient4, gradient5];
+    return [gradient1, gradient2, gradient3, gradient4, gradient5, gradient6];
 }
 
 function ChartView() {
@@ -81,24 +85,12 @@ function ChartView() {
         "눈": 0
     };
 
-    if (localStorage.getItem("song") === null) {
-        localStorage.setItem("song", JSON.stringify(initialState));
-    }
-    if (localStorage.getItem("playlist") === null) {
-        localStorage.setItem("playlist", JSON.stringify(initialState));
-    }
-
     useEffect(() => {
-        const song_raw = localStorage.getItem("song");
-        const song_dataset = song_raw ? JSON.parse(song_raw) : {};
+        const tuneCast_raw = localStorage.getItem("TuneCast");
+        const tuneCast_dataset = tuneCast_raw ? JSON.parse(tuneCast_raw) : {};
 
-        const playlist_raw = localStorage.getItem("playlist");
-        const playlist_dataset = playlist_raw ? JSON.parse(playlist_raw) : {};
-
-        setSong(song_dataset);
-        setPlaylist(playlist_dataset);
-
-        console.log(song_dataset);
+        setSong(tuneCast_dataset["song"]);
+        setPlaylist(tuneCast_dataset["playlist"]);
     }, []);
 
     useEffect(() => {
@@ -145,10 +137,10 @@ function ChartView() {
         }
     };
 
-    const labels = ['맑음', '구름', '안개', '비', '눈']
+    const labels = ['맑음', '구름', '안개', '비', '눈', 'etc']
 
     const song_data = {
-        labels: labels,
+        labels: Object.keys(song),
         datasets: [
             {
                 label: '이달의 좋아요한 음악',
@@ -169,7 +161,7 @@ function ChartView() {
     };
 
     const playlist_data = {
-        labels: labels,
+        labels: Object.keys(playlist),
         datasets: [
             {
                 label: '이달의 좋아요한 플레이리스트',
@@ -257,7 +249,7 @@ const MainContainer = styled.div`
     align-items: center;
     justify-content: center;
     border-radius: 30px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.5);
 
     margin: 35px 0;
 `
@@ -313,7 +305,7 @@ const ChartContainer = styled.div`
 `
 const ChartText = styled.p`
     position: relative;
-    top: 55%;
+    top: 50%;
 
     font-family: 'Inter';
     font-style: normal;
@@ -322,7 +314,7 @@ const ChartText = styled.p`
 `
 const ChartText2 = styled.p`
     position: relative;
-    top: 58%;
+    top: 55%;
 
     font-family: 'Inter';
     font-style: normal;

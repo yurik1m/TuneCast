@@ -1,60 +1,61 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useEffect, useReducer,Fragment } from "react";
-import {Header, Footer} from "../components"
+import { useEffect, useReducer, Fragment } from "react";
+import { Header, Footer } from "../components"
 import mapicon from "../assets/images/mapping_icon.png"
-import {searchPlaylistsByTag} from "../utils/spotifyAPI"
+import { searchPlaylistsByTag } from "../utils/spotifyAPI"
 import playicon from "/etc/play_icon.png"
 import back from "../assets/images/back_icon.png"
-import { fetchCurrentWeatherData, fetchForecastData} from "../utils/WeatherAPIFunctions";
-import {sites, weathers} from "../utils/data";
-import {Menu, SiteList, Main, PlayContainer, PlayCover, PlayButton, PlayDetail, PlayTitle, ButtonImg, Back, CurrentWeatherInfoContainer, CurrentWeatherContainer, Icon, MainContainer, City, Report, Special, MaxTemp, Temp, MinTemp, CurrentTemp, Text, ForcastContainer, CurrentWeatherIcon,DayContainer, Weather} from "../styles/StyledHome";
-import {fetchGradient} from "../styles/Gradient";
+import { fetchCurrentWeatherData, fetchForecastData } from "../utils/WeatherAPIFunctions";
+import { sites, weathers } from "../utils/data";
+import { Menu, SiteList, Main, PlayContainer, PlayCover, PlayButton, PlayDetail, PlayTitle, ButtonImg, Back, CurrentWeatherInfoContainer, CurrentWeatherContainer, Icon, MainContainer, City, Report, Special, MaxTemp, Temp, MinTemp, CurrentTemp, Text, ForcastContainer, CurrentWeatherIcon, DayContainer, Weather } from "../styles/StyledHome";
+import { fetchGradient } from "../styles/Gradient";
 import "../styles/spinner.css";
 
 
-function PlaylistContainer ({playlist, weather}) {
+function PlaylistContainer({ playlist, weather }) {
   const spotifyPlaylistUrl = `https://open.spotify.com/playlist/${playlist.id}`;
   return (
-   
-      <PlayContainer>
-        <PlayCover src={playlist.cover} alt="플레이리스트 커버"/>
-        <PlayDetail>
-          <Link to={`playlist/${playlist.name}`} state={{data: playlist, weather: weather}}>
-            <PlayTitle>{playlist.name}</PlayTitle>
-          </Link>
-          <p>spotify</p>
-          <a href={spotifyPlaylistUrl} target="_blank" rel="noreferrer">
-            <PlayButton>
-              <ButtonImg src={playicon} alt="play"/>
-            </PlayButton>
-          </a>
-        </PlayDetail>
-     </PlayContainer>
 
-)};
+    <PlayContainer>
+      <PlayCover src={playlist.cover} alt="플레이리스트 커버" />
+      <PlayDetail>
+        <Link to={`playlist/${playlist.name}`} state={{ data: playlist, weather: weather }}>
+          <PlayTitle>{playlist.name}</PlayTitle>
+        </Link>
+        <p>spotify</p>
+        <a href={spotifyPlaylistUrl} target="_blank" rel="noreferrer">
+          <PlayButton>
+            <ButtonImg src={playicon} alt="play" />
+          </PlayButton>
+        </a>
+      </PlayDetail>
+    </PlayContainer>
+
+  )
+};
 
 
 const special_report = (weather) => { //기상청 기준인데 기준 완화
-  if(weather.feels_like >= 33) {
+  if (weather.feels_like >= 33) {
     return "폭염주의보"
   }
-  if(weather.temp_min <= 12) {
+  if (weather.temp_min <= 12) {
     return "한파주의보"
   }
-  if(weather.wind_speed >= 14) {
+  if (weather.wind_speed >= 14) {
     return "강풍주의보"
   }
-  if(weather.huminity <= 35) {
+  if (weather.huminity <= 35) {
     return "건조주의보"
   }
   return ""
 }
 
-function CurrntWeather ({currentWeatherInfo}) {
+function CurrntWeather({ currentWeatherInfo }) {
   const WeatherIcon = () => {
     const weather = weathers.find((weather) => weather.name === currentWeatherInfo.weather);
-    return <CurrentWeatherIcon src={weather.src} alt={weather.name}/>
+    return <CurrentWeatherIcon src={weather.src} alt={weather.name} />
   }
 
   return (
@@ -80,10 +81,10 @@ function CurrntWeather ({currentWeatherInfo}) {
   )
 }
 
-function ForcastWeather ({weather})  {
+function ForcastWeather({ weather }) {
   const WeatherIcon = () => {
     const weatherInfo = weathers.find((w) => w.name === weather.weather);
-    return <Icon src={weatherInfo.src} alt={weatherInfo.name}/>
+    return <Icon src={weatherInfo.src} alt={weatherInfo.name} />
   };
   return (
     <DayContainer>
@@ -103,20 +104,20 @@ const initialState = { //초기값
   isLoading: true,
 }
 
-const reducer = (state, action) => { 
+const reducer = (state, action) => {
   switch (action.type) {
     case "TOGGLE_MENU":
-      return {...state, isMenuOpen: !state.isMenuOpen};
+      return { ...state, isMenuOpen: !state.isMenuOpen };
     case "SELECT_ITEM":
-      return {...state, selectedItem: action.payload};
+      return { ...state, selectedItem: action.payload };
     case "SET_CURRENT_WEATHER_INFO":
-      return {...state, currentWeatherInfo: action.payload};
+      return { ...state, currentWeatherInfo: action.payload };
     case "SET_FORECAST_WEATHER_INFO":
-      return { ...state, forcastWeatherInfo: action.payload};
+      return { ...state, forcastWeatherInfo: action.payload };
     case "SET_PLAYLIST":
-      return {...state, playlist: action.payload,};
+      return { ...state, playlist: action.payload, };
     case "TOGGLE_PLAYLIST":
-      return {...state, isPlaylist: !state.isPlaylist};
+      return { ...state, isPlaylist: !state.isPlaylist };
     default:
       return state;
   }
@@ -127,17 +128,29 @@ export default function Home() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialStat = {
-    Clear: 0,
-    Clouds: 0,
-    Rain: 0,
-    Snow: 0,
-    Fog: 0,
-    Etc: 0,
+    song: {
+      맑음: 0,
+      흐림: 0,
+      안개: 0,
+      비: 0,
+      눈: 0,
+      기타: 0,
+    },
+    playlist: {
+      맑음: 0,
+      흐림: 0,
+      안개: 0,
+      비: 0,
+      눈: 0,
+      기타: 0,
+    }
+
   };
 
   if (!localStorage.getItem("TuneCast")) {
     localStorage.setItem("TuneCast", JSON.stringify(initialStat));
   };
+
 
   const handleToggleMenu = () => {
     dispatch({ type: "TOGGLE_MENU" });
@@ -158,7 +171,7 @@ export default function Home() {
       .catch((error) => {
         console.log(error);
       });
-  
+
     fetchForecastData(state.selectedItem)  // 수정된 부분
       .then((data) => {
         dispatch({ type: "SET_FORECAST_WEATHER_INFO", payload: data });
@@ -177,79 +190,79 @@ export default function Home() {
         console.log(error);
       });
   }, [state.isPlaylist]);
-  
 
-  if(state.currentWeatherInfo.length !== 0) {
-  return (
-    <Fragment>
-    <Header isMainPage={true} onMenuClick={handleToggleMenu}/>
-    {state.isMenuOpen && (
-      <MenuWrapper isOpen={state.isMenuOpen}>      
-        <Menu>
-        <div>
-          <img src={mapicon} alt="지역선택"/>
-          위치 선택하기
-        </div>
-        <ul>
-        {sites.map((site, idx) => (
-          <SiteList 
-            key={idx}
-            onClick={() => handleSelectItem(site)}
-          >
-            {site.name}
-          </SiteList>
-        ))}
-        </ul>
-      </Menu>
-    </MenuWrapper>
 
-    )}
-    <Main>
-        {/* <AudioPlayer src={alarm} /> */}
-        <MainContainer>
-          <Back onClick={() => dispatch({type: "TOGGLE_PLAYLIST"})}>
-            <ButtonImg src={back} alt="플레이리스트/날씨 보기"/>
-          </Back>
-          {state.isPlaylist ? (
-            state.playlist.map((playlist) => (
-              <PlaylistContainer 
-                key={playlist.id}
-                playlist={playlist}
-                weather={state.currentWeatherInfo.weather}
-              />
-            ))
-            ) : (
-            <Weather>
-              <CurrntWeather currentWeatherInfo={state.currentWeatherInfo}/>
-              <ForcastContainer>
-                {state.forcastWeatherInfo.map((weather, idx) => (
-                  <ForcastWeather
+  if (state.currentWeatherInfo.length !== 0) {
+    return (
+      <Fragment>
+        <Header isMainPage={true} onMenuClick={handleToggleMenu} />
+        {state.isMenuOpen && (
+          <MenuWrapper isOpen={state.isMenuOpen}>
+            <Menu>
+              <div>
+                <img src={mapicon} alt="지역선택" />
+                위치 선택하기
+              </div>
+              <ul>
+                {sites.map((site, idx) => (
+                  <SiteList
                     key={idx}
-                    weather={weather}
-                />))} 
-             </ForcastContainer>
-            </Weather>
-            )} 
-        </MainContainer>
-    </Main>
-    
-    <Footer />
-    
-    </Fragment>
-  )
-} else {
-  return (
-    <Main>
-      <div className="loadingio-spinner-rolling-ow5spfue44k">
-        <div className="ldio-osnzl6m5ejj">
-          <div>
+                    onClick={() => handleSelectItem(site)}
+                  >
+                    {site.name}
+                  </SiteList>
+                ))}
+              </ul>
+            </Menu>
+          </MenuWrapper>
+
+        )}
+        <Main>
+          {/* <AudioPlayer src={alarm} /> */}
+          <MainContainer>
+            <Back onClick={() => dispatch({ type: "TOGGLE_PLAYLIST" })}>
+              <ButtonImg src={back} alt="플레이리스트/날씨 보기" />
+            </Back>
+            {state.isPlaylist ? (
+              state.playlist.map((playlist) => (
+                <PlaylistContainer
+                  key={playlist.id}
+                  playlist={playlist}
+                  weather={state.currentWeatherInfo.weather}
+                />
+              ))
+            ) : (
+              <Weather>
+                <CurrntWeather currentWeatherInfo={state.currentWeatherInfo} />
+                <ForcastContainer>
+                  {state.forcastWeatherInfo.map((weather, idx) => (
+                    <ForcastWeather
+                      key={idx}
+                      weather={weather}
+                    />))}
+                </ForcastContainer>
+              </Weather>
+            )}
+          </MainContainer>
+        </Main>
+
+        <Footer />
+
+      </Fragment>
+    )
+  } else {
+    return (
+      <Main>
+        <div className="loadingio-spinner-rolling-ow5spfue44k">
+          <div className="ldio-osnzl6m5ejj">
+            <div>
+            </div>
           </div>
-       </div>
-      </div>
-    </Main>
-   
-  )
-}
+        </div>
+      </Main>
+
+    )
+  }
 }
 
 const MenuWrapper = styled.div`
