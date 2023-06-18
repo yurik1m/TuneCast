@@ -70,7 +70,7 @@ function Playlist() {
   const [track,setTrack] = useState([]); //플레이리스트 트랙
   const [count, setCount] = useState(0); //선호도
   
-  const preference = JSON.parse(localStorage.getItem("Preference"));
+  const preference = JSON.parse(localStorage.getItem("TuneCast"));
   
   //로컬스토리지에 저장
   useEffect(() => {
@@ -87,7 +87,7 @@ function Playlist() {
     }else {
       preference.Etc = count;
     };
-    localStorage.setItem("Preference", JSON.stringify(preference));
+    localStorage.setItem("TuneCast", JSON.stringify(preference));
   }, [count]);
 
   // // 플레이리스트 받기
